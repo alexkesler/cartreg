@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="310.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.kesler.cartreg.gui.carttype.CartTypeListController">
+   <children>
+      <ListView fx:id="cartTypeListView" onMouseClicked="#handleCartTypeListViewMouseClick" prefHeight="324.0" prefWidth="365.0" VBox.vgrow="ALWAYS">
+          <placeholder>
+              <javafx.scene.text.Text text="Нет данных" />
+          </placeholder>
+          <VBox.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </VBox.margin>
+      </ListView>
+       <ToolBar prefHeight="40.0" prefWidth="200.0">
+           <items>
+               <Button mnemonicParsing="false" onAction="#handleAddCartTypeButtonAction">
+                   <graphic>
+                       <ImageView>
+                           <image>
+                               <Image url="@../images/add.png" />
+                           </image>
+                       </ImageView>
+                   </graphic></Button>
+               <Button mnemonicParsing="false" onAction="#handleEditCartTypeButtonAction">
+                   <graphic>
+                       <ImageView>
+                           <image>
+                               <Image url="@../images/pencil.png" />
+                           </image>
+                       </ImageView>
+                   </graphic></Button>
+               <Button mnemonicParsing="false" onAction="#handleRemoveCartTypeButtonAction">
+                   <graphic>
+                       <ImageView>
+                           <image>
+                               <Image url="@../images/delete.png" />
+                           </image>
+                       </ImageView>
+                   </graphic></Button>
+               <ProgressIndicator fx:id="updateProgressIndicator" prefHeight="16.0" prefWidth="27.0" visible="false" />
+           </items>
+       </ToolBar>
+      <StackPane prefHeight="43.0" prefWidth="310.0">
+         <children>
+            <ToolBar fx:id="closeButtonToolBar" prefHeight="40.0" prefWidth="200.0">
+              <items>
+                <Button mnemonicParsing="false" onAction="#handleCloseButtonAction" text="Закрыть" />
+              </items>
+            </ToolBar>
+            <ToolBar fx:id="okCancelButtonToolBar" prefHeight="44.0" prefWidth="600.0">
+               <items>
+                  <Button defaultButton="true" mnemonicParsing="false" onAction="#handleOkButtonAction" text="ОК" />
+                  <Button mnemonicParsing="false" onAction="#handleCancelButtonAction" text="Отмена" />
+               </items>
+            </ToolBar>
+         </children>
+      </StackPane>
+   </children>
+</VBox>

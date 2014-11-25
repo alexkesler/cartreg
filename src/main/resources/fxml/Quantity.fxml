@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="79.0" prefWidth="228.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.kesler.cartreg.gui.util.QuantityController">
+   <children>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0">
+         <children>
+            <Label layoutX="14.0" layoutY="14.0" text="Кол-во" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0" />
+            <TextField fx:id="quantityTextField" layoutX="69.0" layoutY="9.0" prefHeight="26.0" prefWidth="82.0" />
+            <Label layoutX="159.0" layoutY="14.0" text="из" AnchorPane.leftAnchor="159.0" AnchorPane.topAnchor="14.0" />
+            <Label fx:id="maxQuantityLabel" layoutX="179.0" layoutY="14.0" AnchorPane.leftAnchor="179.0" AnchorPane.topAnchor="14.0">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <ToolBar prefHeight="38.0" prefWidth="191.0">
+         <items>
+            <Button defaultButton="true" mnemonicParsing="false" onAction="#handleOkButtonAction" text="ОК" />
+            <Button mnemonicParsing="false" onAction="#handleCancelButtonAction" text="Отмена" />
+         </items>
+      </ToolBar>
+   </children>
+</VBox>
