@@ -8,17 +8,17 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Window;
-import org.kesler.cartreg.domain.CartSet;
-import org.kesler.cartreg.domain.CartStatus;
-import org.kesler.cartreg.domain.Place;
-import org.kesler.cartreg.domain.PlaceType;
+import org.kesler.cartreg.domain.*;
 import org.kesler.cartreg.gui.AbstractController;
 import org.kesler.cartreg.gui.place.PlaceListController;
 import org.kesler.cartreg.gui.cartset.CartSetController;
+import org.kesler.cartreg.service.CartSetChangeService;
 import org.kesler.cartreg.service.CartSetService;
 import org.kesler.cartreg.util.FXUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Date;
 
 
 /**
@@ -39,6 +39,9 @@ public class ArrivalController extends AbstractController {
 
     @Autowired
     protected CartSetService cartSetService;
+
+    @Autowired
+    protected CartSetChangeService cartSetChangeService;
 
     private final ObservableList<CartSet> observableCartSets = FXCollections.observableArrayList();
     private Place place;
@@ -89,8 +92,22 @@ public class ArrivalController extends AbstractController {
 
     @Override
     protected void updateResult() {
+
+
         for(CartSet cartSet:observableCartSets) {
             cartSetService.addCartSet(cartSet);
+
+            // Сохраняем перемещение
+            CartSetChange cartSetChange = new CartSetChange();
+            cartSetChange.setCartType(cartSet.getType());
+            cartSetChange.setFromPlace(null);
+            cartSetChange.setToPlace(cartSet.getPlace());
+            cartSetChange.setFromStatus(CartStatus.NONE);
+            cartSetChange.setToStatus(cartSet.getStatus());
+            cartSetChange.setQuantity(cartSet.getQuantity());
+            cartSetChange.setChangeDate(new Date());
+
+            cartSetChangeService.addChange(cartSetChange);
         }
     }
 

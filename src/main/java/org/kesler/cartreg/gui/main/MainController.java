@@ -10,11 +10,14 @@ import org.kesler.cartreg.domain.Place;
 import org.kesler.cartreg.domain.PlaceType;
 import org.kesler.cartreg.gui.AbstractController;
 import org.kesler.cartreg.gui.arrival.ArrivalController;
-import org.kesler.cartreg.gui.filing.FilingController;
+import org.kesler.cartreg.gui.cartsetchanges.CartSetChangesController;
+import org.kesler.cartreg.gui.cartsetreestr.CartSetReestrController;
+import org.kesler.cartreg.gui.filling.FillingController;
+import org.kesler.cartreg.gui.move.MoveController;
 import org.kesler.cartreg.gui.place.PlaceComparator;
 import org.kesler.cartreg.gui.place.PlaceListController;
 import org.kesler.cartreg.gui.carttype.CartTypeListController;
-import org.kesler.cartreg.gui.move.MoveController;
+import org.kesler.cartreg.gui.exchange.ExchangeController;
 import org.kesler.cartreg.gui.placecartsets.PlaceCartSetsController;
 import org.kesler.cartreg.service.CartSetService;
 import org.kesler.cartreg.service.PlaceService;
@@ -51,10 +54,19 @@ public class MainController extends AbstractController{
     private PlaceCartSetsController placeCartSetsController;
 
     @Autowired
+    private ExchangeController exchangeController;
+
+    @Autowired
     private MoveController moveController;
 
     @Autowired
-    private FilingController filingController;
+    private FillingController fillingController;
+
+    @Autowired
+    private CartSetChangesController cartSetChangesController;
+
+    @Autowired
+    private CartSetReestrController cartSetReestrController;
 
     @Autowired
     private PlaceService placeService;
@@ -67,6 +79,8 @@ public class MainController extends AbstractController{
         this.stage = stage;
     }
 
+
+    // Меню Действия
     @FXML protected void handleConnectMenuItemAction(ActionEvent ev) {
 
     }
@@ -83,8 +97,12 @@ public class MainController extends AbstractController{
         showMoveDialog();
     }
 
-    @FXML protected void handleFillingMenuItemAction(ActionEvent ev) {
-        showFillingDialog();
+    @FXML protected void handleExchangeMenuItemAction(ActionEvent ev) {
+        showExchangeDialog();
+    }
+
+    @FXML protected void handleFilingMenuItemAction(ActionEvent ev) {
+        showFilingDialog();
     }
 
     @FXML protected void handleCloseMenuItemAction(ActionEvent ev) {
@@ -92,6 +110,16 @@ public class MainController extends AbstractController{
     }
 
 
+    // Меню Отчеты
+    @FXML protected void handleCartSetChangesMenuItemAction(ActionEvent ev) {
+        showCartSetChangesDialog();
+    }
+
+    @FXML protected void handleCartSetReestrMenuItemAction(ActionEvent ev) {
+        showCartSetReestrDialog();
+    }
+
+    // Меню Настройки
     @FXML protected void handleConectionPropMenuItemAction(ActionEvent ev) {
 
     }
@@ -108,6 +136,8 @@ public class MainController extends AbstractController{
         reloadTree();
     }
 
+
+    // методы для открытия окон
     private void showPlaceCartSetsDialog(){
         log.info("Show PlaceCartSetsDialog...");
         placeListController.showAndWaitSelect(stage);
@@ -126,19 +156,24 @@ public class MainController extends AbstractController{
 
     private void showMoveDialog() {
         log.info("Shove MoveDialog");
+        moveController.show(stage);
+    }
+
+    private void showExchangeDialog() {
+        log.info("Shove ExchangeDialog");
         PlaceType[] placeTypes = {PlaceType.BRANCH};
         placeListController.showAndWaitSelect(stage, placeTypes);
         if(placeListController.getResult()== AbstractController.Result.OK) {
             Place place = placeListController.getSelectedItem();
             if (place!=null) {
-                moveController.show(stage,place);
+                exchangeController.show(stage,place);
             }
         }
     }
 
-    private void showFillingDialog() {
+    private void showFilingDialog() {
         log.info("Show FilingDialog");
-        filingController.show(stage);
+        fillingController.show(stage);
     }
 
     private void showPlaceListDialog() {
@@ -154,6 +189,16 @@ public class MainController extends AbstractController{
     private void closeApplication() {
         log.info("Close Main Window");
         stage.hide();
+    }
+
+    private void showCartSetChangesDialog() {
+        log.info("Show CartSetChangesDialog");
+        cartSetChangesController.show(stage);
+    }
+
+    private void showCartSetReestrDialog() {
+        log.info("Show CartSetReestrDialog");
+        cartSetReestrController.show(stage);
     }
 
     private void reloadTree() {

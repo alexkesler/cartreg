@@ -1,160 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.cell.*?>
 <?import javafx.scene.image.*?>
+<?import javafx.scene.control.cell.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 
-<VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="364.0" prefWidth="452.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.kesler.cartreg.gui.move.MoveController">
+<VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="364.0" prefWidth="602.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.kesler.cartreg.gui.move.MoveController">
    <children>
-      <AnchorPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="44.0" prefWidth="452.0" VBox.vgrow="NEVER">
+      <GridPane hgap="5.0" vgap="5.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="1000.0" minWidth="10.0" prefWidth="291.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="86.0" minWidth="30.0" prefWidth="86.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER" />
+          <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER" />
+        </rowConstraints>
          <children>
-            <Label layoutX="26.0" layoutY="14.0" text="Филиал" AnchorPane.leftAnchor="26.0" AnchorPane.topAnchor="14.0" />
-            <Label fx:id="placeLabel" layoutX="82.0" layoutY="14.0" prefHeight="16.0" prefWidth="320.0" text="Label" AnchorPane.leftAnchor="82.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="14.0">
+            <Label text="Откуда" />
+            <Label text="Куда" GridPane.rowIndex="1" />
+            <Label fx:id="sourcePlaceLabel" GridPane.columnIndex="1">
                <font>
                   <Font name="System Bold" size="13.0" />
                </font>
             </Label>
+            <Label fx:id="destinationPlaceLabel" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+            <Button mnemonicParsing="false" onAction="#handleSelectSourcePlaceButtonAction" text="..." GridPane.columnIndex="2" />
+            <Button mnemonicParsing="false" onAction="#handleSelectDestinationPlaceButtonAction" text="..." GridPane.columnIndex="2" GridPane.rowIndex="1" />
          </children>
-      </AnchorPane>
-      <Accordion VBox.vgrow="ALWAYS" expandedPane="$mainPane">
-        <panes>
-          <TitledPane fx:id="mainPane" animated="true" text="Принято">
-               <content>
-                  <VBox prefHeight="200.0" prefWidth="100.0">
-                     <children>
-                        <TableView fx:id="inCartSetsTableView" maxHeight="1000.0" maxWidth="1000.0" onMouseClicked="#handleiInCartSetsTableViewMouceClick" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-                            <placeholder>
-                                <javafx.scene.text.Text text="Нет данных" />
-                            </placeholder>
-                            <columns>
-                            <TableColumn minWidth="150.0" prefWidth="200.0" text="Модель">
-                                <cellValueFactory>
-                                    <PropertyValueFactory property="model" />
-                                </cellValueFactory>
-                            </TableColumn>
-                            <TableColumn maxWidth="80.0" minWidth="80.0" text="Кол-во">
-                                <cellValueFactory>
-                                    <PropertyValueFactory property="quantity" />
-                                </cellValueFactory>
-                            </TableColumn>
-                            <TableColumn maxWidth="200.0" minWidth="110.0" prefWidth="150.0" text="Сост-е">
-                                <cellValueFactory>
-                                    <PropertyValueFactory property="statusDesc" />
-                                </cellValueFactory>
-                            </TableColumn>
-                          </columns>
-                           <columnResizePolicy>
-                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                           </columnResizePolicy>
-                        </TableView>
-                        <ToolBar prefHeight="40.0" prefWidth="200.0">
-                          <items>
-                              <Button mnemonicParsing="false" onAction="#handleAddInCartSetButtonAction">
-                                 <graphic>
-                                    <ImageView>
-                                       <image>
-                                          <Image url="@../images/add.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
-                              </Button>
-                              <Button mnemonicParsing="false" onAction="#handleEditInCartSetButtonAction">
-                                 <graphic>
-                                    <ImageView>
-                                       <image>
-                                          <Image url="@../images/pencil.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
-                              </Button>
-                              <Button mnemonicParsing="false" onAction="#handleRemoveInCartSetButtonAction">
-                                 <graphic>
-                                    <ImageView>
-                                       <image>
-                                          <Image url="@../images/delete.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
-                              </Button>
-                          </items>
-                        </ToolBar>
-                     </children>
-                  </VBox>
-               </content>
-            </TitledPane>
-          <TitledPane animated="true" text="Выдано">
-               <content>
-                  <VBox prefHeight="200.0" prefWidth="100.0">
-                     <children>
-                        <TableView fx:id="outCartSetsTableView" maxHeight="1000.0" maxWidth="1000.0" onMouseClicked="#handleOutCartSetsTableViewMouceClick" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-                            <placeholder>
-                                <javafx.scene.text.Text text="Нет данных" />
-                            </placeholder>
-                            <columns>
-                            <TableColumn minWidth="150.0" prefWidth="190.0" text="Модель">
-                                <cellValueFactory>
-                                    <PropertyValueFactory property="model" />
-                                </cellValueFactory>
-                            </TableColumn>
-                            <TableColumn maxWidth="80.0" minWidth="80.0" text="Кол-во">
-                                <cellValueFactory>
-                                    <PropertyValueFactory property="quantity" />
-                                </cellValueFactory>
-                            </TableColumn>
-                              <TableColumn maxWidth="160.0" minWidth="110.0" prefWidth="155.0" text="Состо-е">
-                                  <cellValueFactory>
-                                      <PropertyValueFactory property="statusDesc" />
-                                  </cellValueFactory>
-                              </TableColumn>
-                          </columns>
-                           <columnResizePolicy>
-                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                           </columnResizePolicy>
-                        </TableView>
-                        <ToolBar prefHeight="40.0" prefWidth="200.0">
-                          <items>
-                              <Button mnemonicParsing="false" onAction="#handleAddOutCartSetButtonAction">
-                                 <graphic>
-                                    <ImageView>
-                                       <image>
-                                          <Image url="@../images/add.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
-                              </Button>
-                              <Button mnemonicParsing="false" onAction="#handleEditOutCartSetButtonAction">
-                                 <graphic>
-                                    <ImageView>
-                                       <image>
-                                          <Image url="@../images/pencil.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
-                              </Button>
-                              <Button mnemonicParsing="false" onAction="#handleRemoveOutCartSetButtonAction">
-                                 <graphic>
-                                    <ImageView>
-                                       <image>
-                                          <Image url="@../images/delete.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
-                              </Button>
-                          </items>
-                        </ToolBar>
-                     </children>
-                  </VBox>
-               </content>
-            </TitledPane>
-        </panes>
-      </Accordion>
-      <ToolBar prefHeight="44.0" prefWidth="600.0">
+         <VBox.margin>
+            <Insets bottom="5.0" left="10.0" right="10.0" top="10.0" />
+         </VBox.margin>
+      </GridPane>
+      <TableView fx:id="cartSetsTableView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+        <columns>
+          <TableColumn editable="false" maxWidth="500.0" minWidth="100.0" prefWidth="333.0" sortable="false" text="Модель">
+              <cellValueFactory>
+                  <PropertyValueFactory property="model" />
+              </cellValueFactory>
+          </TableColumn>
+          <TableColumn editable="false" maxWidth="150.0" minWidth="90.0" prefWidth="90.0" sortable="false" text="Состояние">
+              <cellValueFactory>
+                  <PropertyValueFactory property="statusDesc" />
+              </cellValueFactory>
+          </TableColumn>
+          <TableColumn editable="false" maxWidth="102.0" minWidth="70.0" prefWidth="102.0" sortable="false" text="Кол-во">
+              <cellValueFactory>
+                  <PropertyValueFactory property="quantity" />
+              </cellValueFactory>
+          </TableColumn>
+        </columns>
+         <VBox.margin>
+            <Insets bottom="5.0" left="15.0" right="15.0" />
+         </VBox.margin>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+      <ToolBar maxHeight="40.0" minHeight="40.0" prefHeight="40.0" prefWidth="200.0">
          <items>
-            <Button defaultButton="true" mnemonicParsing="false" onAction="#handleOkButtonAction" text="ОК" />
+            <Button mnemonicParsing="false" onAction="#handleAddCartSetButtonAction">
+               <graphic>
+                  <ImageView>
+                     <image>
+                        <Image url="@../images/add.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#handleEditCartSetButtonAction">
+               <graphic>
+                  <ImageView>
+                     <image>
+                        <Image url="@../images/pencil.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#handleRemoveCartSetButtonAction">
+               <graphic>
+                  <ImageView>
+                     <image>
+                        <Image url="@../images/delete.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+         </items>
+         <padding>
+            <Insets left="15.0" />
+         </padding>
+      </ToolBar>
+      <ToolBar prefHeight="44.0" prefWidth="460.0">
+         <items>
+            <Button defaultButton="true" mnemonicParsing="false" onAction="#handleOkButtonAction" text="Переместить" />
             <Button mnemonicParsing="false" onAction="#handleCancelButtonAction" text="Отмена" />
          </items>
       </ToolBar>

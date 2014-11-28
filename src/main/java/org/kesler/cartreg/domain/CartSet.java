@@ -17,6 +17,8 @@ public class CartSet {
         status = CartStatus.NONE;
     }
 
+    public String getUuid() { return uuid; }
+
     public CartType getType() { return type; }
     public void setType(CartType type) { this.type = type; }
 
@@ -35,6 +37,8 @@ public class CartSet {
 
     public Place getPlace() { return place; }
     public void setPlace(Place place) { this.place = place; }
+    public String getPlaceString() {return place.getCommonName();}
+
 
     public boolean mergeCardSet(CartSet cartSet) {
 

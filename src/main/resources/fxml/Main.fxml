@@ -18,14 +18,16 @@
               <MenuItem mnemonicParsing="false" onAction="#handleConnectMenuItemAction" text="Подключиться" />
                   <MenuItem mnemonicParsing="false" onAction="#handlePlaceCartSetsMenuItemAction" text="Наличие" />
                   <MenuItem mnemonicParsing="false" onAction="#handleArrivalMenuItemAction" text="Поступление" />
-                  <MenuItem mnemonicParsing="false" onAction="#handleMoveMenuItemAction" text="Прием/выдача" />
-                  <MenuItem mnemonicParsing="false" onAction="#handleFillingMenuItemAction" text="Заправка/списание" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleMoveMenuItemAction" text="Перемещение" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleExchangeMenuItemAction" text="Прием/выдача" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleFilingMenuItemAction" text="Заправка/списание" />
               <MenuItem mnemonicParsing="false" onAction="#handleCloseMenuItemAction" text="Закрыть" />
             </items>
           </Menu>
             <Menu mnemonicParsing="false" text="Отчеты">
               <items>
-                <MenuItem mnemonicParsing="false" text="Перемещения" />
+                <MenuItem mnemonicParsing="false" onAction="#handleCartSetChangesMenuItemAction" text="Перемещения" />
+                <MenuItem mnemonicParsing="false" onAction="#handleCartSetReestrMenuItemAction" text="Реестр картриджей" />
               </items>
             </Menu>
           <Menu fx:id="configMenu" mnemonicParsing="false" text="Настройки">

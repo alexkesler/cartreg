@@ -3,14 +3,17 @@ package org.kesler.cartreg;
 import javafx.fxml.FXMLLoader;
 
 import org.kesler.cartreg.gui.arrival.ArrivalController;
-import org.kesler.cartreg.gui.filing.FilingController;
+import org.kesler.cartreg.gui.cartsetchanges.CartSetChangesController;
+import org.kesler.cartreg.gui.cartsetreestr.CartSetReestrController;
+import org.kesler.cartreg.gui.filling.FillingController;
+import org.kesler.cartreg.gui.move.MoveController;
 import org.kesler.cartreg.gui.place.PlaceController;
 import org.kesler.cartreg.gui.place.PlaceListController;
 import org.kesler.cartreg.gui.cartset.CartSetController;
 import org.kesler.cartreg.gui.carttype.CartTypeController;
 import org.kesler.cartreg.gui.carttype.CartTypeListController;
 import org.kesler.cartreg.gui.main.MainController;
-import org.kesler.cartreg.gui.move.MoveController;
+import org.kesler.cartreg.gui.exchange.ExchangeController;
 import org.kesler.cartreg.gui.placecartsets.PlaceCartSetsController;
 import org.kesler.cartreg.gui.util.QuantityController;
 import org.kesler.cartreg.service.*;
@@ -87,6 +90,11 @@ public class CartRegAppFactory {
     }
 
     @Bean
+    public MoveController moveController() {
+        return loadController("/fxml/Move.fxml");
+    }
+
+    @Bean
     public CartSetController cartSetController() {
         return loadController("/fxml/CartSet.fxml");
     }
@@ -97,18 +105,28 @@ public class CartRegAppFactory {
     }
 
     @Bean
-    public MoveController moveController() {
-        return loadController("/fxml/Move.fxml");
+    public ExchangeController exchangeController() {
+        return loadController("/fxml/Exchange.fxml");
     }
 
     @Bean
-    public FilingController fillingController() {
-        return loadController("/fxml/Filing.fxml");
+    public FillingController fillingController() {
+        return loadController("/fxml/Filling.fxml");
     }
 
     @Bean
     public QuantityController quantityController() {
         return loadController("/fxml/Quantity.fxml");
+    }
+
+    @Bean
+    public CartSetChangesController cartSetChangesController() {
+        return loadController("/fxml/CartSetChanges.fxml");
+    }
+
+    @Bean
+    public CartSetReestrController cartSetReestrController() {
+        return loadController("/fxml/CartSetReestr.fxml");
     }
 
     /**
@@ -122,11 +140,6 @@ public class CartRegAppFactory {
      * @return the WelcomeRestService which provides a convenient facade for calling server side REST calls.
      */
 
-
-//    @Bean
-//    public StorageService storageService() {
-//        return new RecordRestServiceImpl(env.getProperty("server.url"));
-//    }
 
     @Bean
     public PlaceService placeService() {
@@ -144,13 +157,8 @@ public class CartRegAppFactory {
     }
 
     @Bean
-    public MoveService moveService() {
-        return new MoveServiceSimpleImpl();
-    }
-
-    @Bean
-    public FillingService fillingService() {
-        return new FillingServiceSimpleImpl();
+    public CartSetChangeService cartSetChangeService() {
+        return new CartSetChangeServiceSimpleImpl();
     }
 
     /**
