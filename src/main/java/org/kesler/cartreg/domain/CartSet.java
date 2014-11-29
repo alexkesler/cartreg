@@ -42,6 +42,7 @@ public class CartSet {
 
     public boolean mergeCardSet(CartSet cartSet) {
 
+        if (cartSet==null) return false;
         if (!type.equals(cartSet.getType())) return false;
         if (!status.equals(cartSet.getStatus())) return false;
         if (!place.equals(cartSet.getPlace())) return false;

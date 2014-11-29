@@ -23,6 +23,7 @@ public class CartSetChange {
 
     public Type getType() { return type; }
     public void setType(Type type) { this.type = type; }
+    public String getTypeString() {return type.getDesc();}
 
     public CartType getCartType() { return cartType; }
     public void setCartType(CartType cartType) { this.cartType = cartType; }

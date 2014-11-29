@@ -99,6 +99,8 @@ public class ArrivalController extends AbstractController {
 
             // Сохраняем перемещение
             CartSetChange cartSetChange = new CartSetChange();
+
+            cartSetChange.setType(CartSetChange.Type.ARRIVAL);
             cartSetChange.setCartType(cartSet.getType());
             cartSetChange.setFromPlace(null);
             cartSetChange.setToPlace(cartSet.getPlace());

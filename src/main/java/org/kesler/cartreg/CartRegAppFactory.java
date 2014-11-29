@@ -16,10 +16,10 @@ import org.kesler.cartreg.gui.main.MainController;
 import org.kesler.cartreg.gui.exchange.ExchangeController;
 import org.kesler.cartreg.gui.placecartsets.PlaceCartSetsController;
 import org.kesler.cartreg.gui.util.QuantityController;
-import org.kesler.cartreg.service.*;
-import org.kesler.cartreg.service.support.*;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import java.io.IOException;
 
@@ -40,15 +40,9 @@ import java.io.IOException;
  * http://static.springsource.org/spring/docs/3.0.x/spring-framework-reference/html/beans.html#beans-java
  */
 @Configuration
-//@PropertySource(value="file:config/CartReg.properties")
+@Import(CartRegAppServiceFactory.class)
 public class CartRegAppFactory {
 
-    /**
-     * Spring will wire this up to the properties file defined by the @PropertySource definition on this class. This
-     * allows us to get access to our configuration properties in a fairly clean way.
-     */
-//    @Autowired
-//    private Environment env;
 
     /**
      * Factory method for creating a RestTemplate, which is a Spring helper class that simplifies making Rest calls onto
@@ -127,38 +121,6 @@ public class CartRegAppFactory {
     @Bean
     public CartSetReestrController cartSetReestrController() {
         return loadController("/fxml/CartSetReestr.fxml");
-    }
-
-    /**
-     * Creates a WelcomeRestService which provides a nice wrapper around the REST calls the server, encapsulating all
-     * the server calls and String manipulations in one place.
-     * <p/>
-     * Note that the WelcomeRestService defines a reference to the RestTemplate using the @Autowired annotation. As a
-     * result the RestTemplate created by the method above will be automatically injected into this repository when it is
-     * created.
-     *
-     * @return the WelcomeRestService which provides a convenient facade for calling server side REST calls.
-     */
-
-
-    @Bean
-    public PlaceService placeService() {
-        return new PlaceServiceSimpleImpl();
-    }
-
-    @Bean
-    public CartTypeService cartTypeService() {
-        return new CartTypeServiceSimpleImpl();
-    }
-
-    @Bean
-    public CartSetService cartSetService() {
-        return new CartSetServiceSimpleImpl();
-    }
-
-    @Bean
-    public CartSetChangeService cartSetChangeService() {
-        return new CartSetChangeServiceSimpleImpl();
     }
 
     /**

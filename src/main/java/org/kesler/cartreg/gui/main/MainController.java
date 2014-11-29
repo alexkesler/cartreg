@@ -105,6 +105,8 @@ public class MainController extends AbstractController{
         showFilingDialog();
     }
 
+    @FXML protected void handleWithdrawMenuItemAction(ActionEvent ev) { showWithdrawDialog();}
+
     @FXML protected void handleCloseMenuItemAction(ActionEvent ev) {
         closeApplication();
     }
@@ -174,6 +176,10 @@ public class MainController extends AbstractController{
     private void showFilingDialog() {
         log.info("Show FilingDialog");
         fillingController.show(stage);
+    }
+
+    private void showWithdrawDialog() {
+
     }
 
     private void showPlaceListDialog() {

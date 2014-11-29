@@ -203,7 +203,7 @@ public class ExchangeController extends AbstractController {
     }
 
     private void addOutCartSet() {
-        CartStatus[] statuses = {CartStatus.NEW,CartStatus.FILED};
+        CartStatus[] statuses = {CartStatus.NEW,CartStatus.FILLED};
         placeCartSetsController.showAndWaitSelect(stage, direct,statuses);
         if (placeCartSetsController.getResult()==Result.OK) {
             CartSet sourceCartSet = placeCartSetsController.getSelectedItem();
@@ -284,6 +284,7 @@ public class ExchangeController extends AbstractController {
 
     @Override
     protected void handleCancel() {
+
         Set<CartSet> moveCartSets = toFromCartSets.keySet();
         for (CartSet moveCartSet:moveCartSets) {
             CartSet sourceCartSet = toFromCartSets.get(moveCartSet);
@@ -294,28 +295,31 @@ public class ExchangeController extends AbstractController {
         }
         clearLists();
         stage.hide();
+
     }
 
     private void saveCartSets() {
+
         // сохраняем поступившие наборы
         for (CartSet moveCartSet:observableInCartSets) {
             cartSetService.addCartSet(moveCartSet);
             CartSet sourceCartSet = toFromCartSets.get(moveCartSet);
             cartSetService.updateCartSet(sourceCartSet);
-            saveCartSetChange(sourceCartSet,moveCartSet);
+            saveCartSetChange(sourceCartSet,moveCartSet, CartSetChange.Type.RECIEVE);
         }
         // сохраняем отправленные наборы
         for (CartSet moveCartSet:observableOutCartSets) {
             cartSetService.addCartSet(moveCartSet);
             CartSet sourceCartSet = toFromCartSets.get(moveCartSet);
             cartSetService.updateCartSet(sourceCartSet);
-            saveCartSetChange(sourceCartSet, moveCartSet);
+            saveCartSetChange(sourceCartSet, moveCartSet, CartSetChange.Type.SEND);
         }
 
     }
 
-    private void saveCartSetChange(CartSet fromCartSet, CartSet toCartSet) {
+    private void saveCartSetChange(CartSet fromCartSet, CartSet toCartSet, CartSetChange.Type type) {
         CartSetChange cartSetChange = new CartSetChange();
+        cartSetChange.setType(type);
         cartSetChange.setFromPlace(fromCartSet.getPlace());
         cartSetChange.setToPlace(toCartSet.getPlace());
         cartSetChange.setCartType(fromCartSet.getType());

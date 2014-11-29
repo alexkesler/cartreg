@@ -224,6 +224,7 @@ public class MoveController extends AbstractController {
 
     private void saveCartSetChange(CartSet fromCartSet, CartSet toCartSet) {
         CartSetChange cartSetChange = new CartSetChange();
+        cartSetChange.setType(CartSetChange.Type.MOVE);
         cartSetChange.setFromPlace(fromCartSet.getPlace());
         cartSetChange.setToPlace(toCartSet.getPlace());
         cartSetChange.setCartType(fromCartSet.getType());

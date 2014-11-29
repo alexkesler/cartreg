@@ -123,7 +123,7 @@ public class PlaceCartSetsController extends AbsractListController<CartSet> {
                 cartSet.setStatus(CartStatus.NEW);
                 break;
             case DIRECT:
-                cartSet.setStatus(CartStatus.FILED);
+                cartSet.setStatus(CartStatus.FILLED);
                 break;
             case BRANCH:
                 cartSet.setStatus(CartStatus.INSTALLED);

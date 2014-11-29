@@ -20,7 +20,8 @@
                   <MenuItem mnemonicParsing="false" onAction="#handleArrivalMenuItemAction" text="Поступление" />
                   <MenuItem mnemonicParsing="false" onAction="#handleMoveMenuItemAction" text="Перемещение" />
                   <MenuItem mnemonicParsing="false" onAction="#handleExchangeMenuItemAction" text="Прием/выдача" />
-                  <MenuItem mnemonicParsing="false" onAction="#handleFilingMenuItemAction" text="Заправка/списание" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleFilingMenuItemAction" text="Заправка/дефектовка" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleWithdrawMenuItemAction" text="Списание" />
               <MenuItem mnemonicParsing="false" onAction="#handleCloseMenuItemAction" text="Закрыть" />
             </items>
           </Menu>

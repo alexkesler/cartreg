@@ -5,6 +5,7 @@ import org.kesler.cartreg.domain.Place;
 
 import java.util.Collection;
 
+
 public interface PlaceService {
 
     public Collection<Place> getAllPlaces();

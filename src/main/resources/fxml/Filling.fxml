@@ -89,7 +89,7 @@
                <content>
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
-                        <TableView fx:id="filedCartSetsTableView" maxHeight="1000.0" maxWidth="1000.0" onMouseClicked="#handleFiledCartSetsTableViewMouseClick" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                        <TableView fx:id="filledCartSetsTableView" maxHeight="1000.0" maxWidth="1000.0" onMouseClicked="#handleFiledCartSetsTableViewMouseClick" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                             <placeholder>
                                 <javafx.scene.text.Text text="Нет данных" />
                             </placeholder>
@@ -205,7 +205,7 @@
       </Accordion>
       <ToolBar prefHeight="44.0" prefWidth="600.0">
          <items>
-            <Button defaultButton="true" mnemonicParsing="false" onAction="#handleOkButtonAction" text="ОК" />
+            <Button defaultButton="true" mnemonicParsing="false" onAction="#handleOkButtonAction" text="Провести" />
             <Button mnemonicParsing="false" onAction="#handleCancelButtonAction" text="Отмена" />
          </items>
       </ToolBar>

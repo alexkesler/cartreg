@@ -6,7 +6,7 @@ package org.kesler.cartreg.domain;
 public enum CartStatus {
     NONE("Не определен"),
     NEW("Новый"),
-    FILED("Заправлен"),
+    FILLED("Заправлен"),
     INSTALLED("Установлен"),
     EMPTY("Пустой"),
     DEFECT("Неисправен"),
