@@ -1,10 +1,13 @@
 package org.kesler.cartreg.gui.move;
 
+import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableView;
 import javafx.stage.Window;
 import org.controlsfx.control.action.Action;
@@ -35,6 +38,7 @@ public class MoveController extends AbstractController {
 
     @FXML protected Label sourcePlaceLabel;
     @FXML protected Label destinationPlaceLabel;
+    @FXML protected ProgressIndicator updateProgressIndicator;
 
     @FXML protected TableView<CartSet> cartSetsTableView;
 
@@ -214,9 +218,24 @@ public class MoveController extends AbstractController {
     private void saveCartSets() {
         // сохраняем поступившие наборы
         for (CartSet moveCartSet:observableCartSets) {
-            cartSetService.addCartSet(moveCartSet);
+
+            log.info("Adding move CartSet...");
+            AddTask addTask = new AddTask(moveCartSet);
+            BooleanBinding runningBinding = addTask.stateProperty().isEqualTo(Task.State.RUNNING);
+            updateProgressIndicator.visibleProperty().bind(runningBinding);
+
+            new Thread(addTask).start();
+
+
             CartSet sourceCartSet = toFromCartSets.get(moveCartSet);
-            cartSetService.updateCartSet(sourceCartSet);
+
+            log.info("Updating source CartSet...");
+            UpdateTask updateTask = new UpdateTask(sourceCartSet);
+            runningBinding = updateTask.stateProperty().isEqualTo(Task.State.RUNNING);
+            updateProgressIndicator.visibleProperty().bind(runningBinding);
+
+            new Thread(updateTask).start();
+
             saveCartSetChange(sourceCartSet,moveCartSet);
         }
 
@@ -234,7 +253,13 @@ public class MoveController extends AbstractController {
         cartSetChange.setChangeDate(new Date());
 
 
-        cartSetChangeService.addChange(cartSetChange);
+        log.info("Saving change... ");
+        SaveChangeTask saveChangeTask = new SaveChangeTask(cartSetChange);
+
+        BooleanBinding runningBinding = saveChangeTask.stateProperty().isEqualTo(Task.State.RUNNING);
+        updateProgressIndicator.visibleProperty().bind(runningBinding);
+
+        new Thread(saveChangeTask).start();
     }
 
     private void clearLists() {
@@ -282,6 +307,114 @@ public class MoveController extends AbstractController {
 
         return true;
     }
+
+
+    class AddTask extends Task<Void> {
+        private final CartSet cartSet;
+
+        AddTask(CartSet cartSet) {
+            this.cartSet = cartSet;
+        }
+        @Override
+        protected Void call() throws Exception {
+            log.debug("Adding CartSet...");
+
+            cartSetService.addCartSet(cartSet);
+
+            return null;
+        }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            log.info("Adding CartSet complete");
+            updateContent();
+        }
+
+        @Override
+        protected void failed() {
+            super.failed();
+            Throwable exception = getException();
+            log.error("Error adding CartSet: " + exception, exception);
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Ошибка")
+                    .message("Ошибка при добавлении набора картриджей: " + exception)
+                    .showException(exception);
+        }
+    }
+
+    class UpdateTask extends Task<Void> {
+        private final CartSet cartSet;
+
+        UpdateTask(CartSet cartSet) {
+            this.cartSet = cartSet;
+        }
+        @Override
+        protected Void call() throws Exception {
+            log.debug("Updating CartSet...");
+
+            cartSetService.updateCartSet(cartSet);
+
+            return null;
+        }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            log.info("Updating CartSet complete");
+            updateContent();
+        }
+
+        @Override
+        protected void failed() {
+            super.failed();
+            Throwable exception = getException();
+            log.error("Error updating CartSet: " + exception, exception);
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Ошибка")
+                    .message("Ошибка при обновлении набора картриджей: " + exception)
+                    .showException(exception);
+        }
+    }
+
+
+
+    class SaveChangeTask extends Task<Void> {
+        private CartSetChange cartSetChange;
+
+        SaveChangeTask(CartSetChange cartSetChange) {
+            this.cartSetChange = cartSetChange;
+        }
+
+
+        @Override
+        protected Void call() throws Exception {
+            log.debug("Saving change...");
+            cartSetChangeService.addChange(cartSetChange);
+            return null;
+        }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            log.info("Saving change complete.");
+        }
+
+        @Override
+        protected void failed() {
+            super.failed();
+            Throwable exception = getException();
+            log.error("Error saving change: " + exception, exception);
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Ошибка")
+                    .message("Ошибка при сохранении перемещения: " + exception)
+                    .showException(exception);
+        }
+    }
+
 
 
 }
