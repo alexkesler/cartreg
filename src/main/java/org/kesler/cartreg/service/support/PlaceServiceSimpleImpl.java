@@ -1,7 +1,6 @@
 package org.kesler.cartreg.service.support;
 
 import org.kesler.cartreg.domain.Place;
-import org.kesler.cartreg.domain.PlaceType;
 import org.kesler.cartreg.service.PlaceService;
 
 import java.util.ArrayList;
@@ -26,7 +25,7 @@ public class PlaceServiceSimpleImpl implements PlaceService {
         List<Place> directs = new ArrayList<Place>();
 
         for (Place place: places) {
-            if (place.getType().equals(PlaceType.DIRECT)) directs.add(place);
+            if (place.getType().equals(Place.Type.DIRECT)) directs.add(place);
         }
 
         return directs;
@@ -37,7 +36,7 @@ public class PlaceServiceSimpleImpl implements PlaceService {
         List<Place> storages = new ArrayList<Place>();
 
         for (Place place: places) {
-            if (place.getType().equals(PlaceType.STORAGE)) storages.add(place);
+            if (place.getType().equals(Place.Type.STORAGE)) storages.add(place);
         }
 
         return storages;
@@ -48,7 +47,7 @@ public class PlaceServiceSimpleImpl implements PlaceService {
         List<Place> storages = new ArrayList<Place>();
 
         for (Place place: places) {
-            if (place.getType().equals(PlaceType.BRANCH)) storages.add(place);
+            if (place.getType().equals(Place.Type.BRANCH)) storages.add(place);
         }
 
         return storages;

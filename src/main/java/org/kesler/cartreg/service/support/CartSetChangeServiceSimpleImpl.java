@@ -24,11 +24,6 @@ public class CartSetChangeServiceSimpleImpl implements CartSetChangeService {
     }
 
     @Override
-    public void updateChange(CartSetChange change) {
-
-    }
-
-    @Override
     public void removeChange(CartSetChange change) {
         changes.remove(change);
     }

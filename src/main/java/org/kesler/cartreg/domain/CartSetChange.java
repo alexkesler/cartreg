@@ -1,5 +1,8 @@
 package org.kesler.cartreg.domain;
 
+import org.kesler.cartreg.dao.AbstractEntity;
+
+import javax.persistence.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -7,16 +10,37 @@ import java.util.UUID;
 /**
  * Изменение
  */
-public class CartSetChange {
+@Entity
+public class CartSetChange extends AbstractEntity{
 
+    @Column(name="UUID",length=36)
     private String uuid = UUID.randomUUID().toString();
+
+    @Enumerated(EnumType.STRING)
     private Type type = Type.UNDEF;
+
+    @ManyToOne
+    @JoinColumn(name = "CartTypeID", nullable = false)
     private CartType cartType;
+
+    @ManyToOne
+    @JoinColumn(name = "FromPlaceID")
     private Place fromPlace;
+
+    @ManyToOne
+    @JoinColumn(name = "ToPlaceID")
     private Place toPlace;
+
+    @Enumerated(EnumType.STRING)
     private CartStatus fromStatus;
+
+    @Enumerated(EnumType.STRING)
     private CartStatus toStatus;
+
+    @Column(name = "Quantity")
     private Integer quantity;
+
+    @Temporal(TemporalType.DATE)
     private Date changeDate;
 
     public String getUuid() { return uuid; }

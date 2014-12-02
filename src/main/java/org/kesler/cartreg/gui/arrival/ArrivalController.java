@@ -114,7 +114,7 @@ public class ArrivalController extends AbstractController {
     }
 
     private void selectPlace() {
-        PlaceType[] placeTypes = {PlaceType.DIRECT,PlaceType.STORAGE};
+        Place.Type[] placeTypes = {Place.Type.DIRECT,Place.Type.STORAGE};
         placeListController.showAndWaitSelect(stage,placeTypes);
         if (placeListController.getResult()==Result.OK) {
             place = placeListController.getSelectedItem();

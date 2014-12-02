@@ -7,7 +7,6 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.kesler.cartreg.domain.CartSet;
 import org.kesler.cartreg.domain.Place;
-import org.kesler.cartreg.domain.PlaceType;
 import org.kesler.cartreg.gui.AbstractController;
 import org.kesler.cartreg.gui.arrival.ArrivalController;
 import org.kesler.cartreg.gui.cartsetchanges.CartSetChangesController;
@@ -163,7 +162,7 @@ public class MainController extends AbstractController{
 
     private void showExchangeDialog() {
         log.info("Shove ExchangeDialog");
-        PlaceType[] placeTypes = {PlaceType.BRANCH};
+        Place.Type[] placeTypes = {Place.Type.BRANCH};
         placeListController.showAndWaitSelect(stage, placeTypes);
         if(placeListController.getResult()== AbstractController.Result.OK) {
             Place place = placeListController.getSelectedItem();
@@ -217,9 +216,9 @@ public class MainController extends AbstractController{
 
         TreeItem<TreeObject> rootItem = new TreeItem<TreeObject>(new RootTreeObject());
 
-        TreeItem<TreeObject> directTypeItem = new TreeItem<TreeObject>(new PlaceTypeTreeObject(PlaceType.DIRECT));
-        TreeItem<TreeObject> storageTypeItem = new TreeItem<TreeObject>(new PlaceTypeTreeObject(PlaceType.STORAGE));
-        TreeItem<TreeObject> branchTypeItem = new TreeItem<TreeObject>(new PlaceTypeTreeObject(PlaceType.BRANCH));
+        TreeItem<TreeObject> directTypeItem = new TreeItem<TreeObject>(new PlaceTypeTreeObject(Place.Type.DIRECT));
+        TreeItem<TreeObject> storageTypeItem = new TreeItem<TreeObject>(new PlaceTypeTreeObject(Place.Type.STORAGE));
+        TreeItem<TreeObject> branchTypeItem = new TreeItem<TreeObject>(new PlaceTypeTreeObject(Place.Type.BRANCH));
 
         rootItem.getChildren().add(directTypeItem);
         rootItem.getChildren().add(storageTypeItem);
@@ -271,9 +270,9 @@ public class MainController extends AbstractController{
     }
 
     class PlaceTypeTreeObject extends TreeObject {
-        private PlaceType placeType;
+        private Place.Type placeType;
 
-        PlaceTypeTreeObject(PlaceType placeType) {
+        PlaceTypeTreeObject(Place.Type placeType) {
             this.placeType = placeType;
         }
 

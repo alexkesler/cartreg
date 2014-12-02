@@ -7,9 +7,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.Window;
 import javafx.util.Callback;
-import org.kesler.cartreg.domain.CartStatus;
 import org.kesler.cartreg.domain.Place;
-import org.kesler.cartreg.domain.PlaceType;
 import org.kesler.cartreg.gui.AbstractController;
 import org.springframework.stereotype.Component;
 
@@ -18,18 +16,18 @@ public class PlaceController extends AbstractController {
 
     private Place place;
 
-    private PlaceType[] placeTypes;
+    private Place.Type[] placeTypes;
 
     @FXML protected TextField nameTextField;
-    @FXML protected ComboBox<PlaceType> placeTypeComboBox;
+    @FXML protected ComboBox<Place.Type> placeTypeComboBox;
 
     @FXML void initialize() {
-        placeTypeComboBox.setCellFactory(new Callback<ListView<PlaceType>, ListCell<PlaceType>>() {
+        placeTypeComboBox.setCellFactory(new Callback<ListView<Place.Type>, ListCell<Place.Type>>() {
             @Override
-            public ListCell<PlaceType> call(ListView<PlaceType> param) {
-                return new ListCell<PlaceType>() {
+            public ListCell<Place.Type> call(ListView<Place.Type> param) {
+                return new ListCell<Place.Type>() {
                     @Override
-                    protected void updateItem(PlaceType item, boolean empty) {
+                    protected void updateItem(Place.Type item, boolean empty) {
                         super.updateItem(item, empty);
                         if (item==null || empty) {
                             setText(null);
@@ -40,9 +38,9 @@ public class PlaceController extends AbstractController {
                 };
             }
         });
-        placeTypeComboBox.setButtonCell(new ListCell<PlaceType>(){
+        placeTypeComboBox.setButtonCell(new ListCell<Place.Type>(){
             @Override
-            protected void updateItem(PlaceType item, boolean empty) {
+            protected void updateItem(Place.Type item, boolean empty) {
                 super.updateItem(item, empty);
                 if (item==null || empty) {
                     setText(null);
@@ -59,7 +57,7 @@ public class PlaceController extends AbstractController {
         super.showAndWait(owner,"Размещение");
     }
 
-    public void showAndWait(Window owner, Place place, PlaceType[] placeTypes) {
+    public void showAndWait(Window owner, Place place, Place.Type[] placeTypes) {
         this.place = place;
         this.placeTypes = placeTypes;
         super.showAndWait(owner,"Размещение");
@@ -71,7 +69,7 @@ public class PlaceController extends AbstractController {
         if (placeTypes!=null) {
             placeTypeComboBox.getItems().addAll(placeTypes);
         } else {
-            placeTypeComboBox.getItems().addAll(PlaceType.values());
+            placeTypeComboBox.getItems().addAll(Place.Type.values());
         }
 
 //        placeTypeComboBox.getSelectionModel().select(place.getType());

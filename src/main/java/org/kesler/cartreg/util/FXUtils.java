@@ -28,6 +28,13 @@ public abstract class FXUtils {
         listView.fireEvent(event);
     }
 
+    public static <T> void triggerUpdateListView(ListView<T> listView, T newValue) {
+        EventType<? extends ListView.EditEvent<T>> type = ListView.<T>editCommitEvent();
+        int i = listView.getItems().indexOf(newValue);
+        Event event = new ListView.EditEvent<T>(listView, type, newValue, i);
+        listView.fireEvent(event);
+    }
+
     public static Date localDateToDate(LocalDate localDate) {
         return localDate==null?null:Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }

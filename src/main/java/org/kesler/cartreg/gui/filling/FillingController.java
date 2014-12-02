@@ -86,7 +86,7 @@ public class FillingController extends AbstractController {
                     .title("Внимание")
                     .message("Дирекция не определена, добавьте дирекцию")
                     .showWarning();
-            PlaceType[] placeTypes = {PlaceType.DIRECT};
+            Place.Type[] placeTypes = {Place.Type.DIRECT};
             placeListController.showAndWaitSelect(owner, placeTypes);
             if (placeListController.getResult()== Result.OK) {
                 direct = placeListController.getSelectedItem();
@@ -99,7 +99,7 @@ public class FillingController extends AbstractController {
                     .title("Внимание")
                     .message("Дирекция не определена, выберите дирекцию")
                     .showWarning();
-            PlaceType[] placeTypes = {PlaceType.DIRECT};
+            Place.Type[] placeTypes = {Place.Type.DIRECT};
             placeListController.showAndWaitSelect(owner, placeTypes);
             if (placeListController.getResult()== Result.OK) {
                 direct = placeListController.getSelectedItem();

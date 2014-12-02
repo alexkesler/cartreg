@@ -1,16 +1,31 @@
 package org.kesler.cartreg.domain;
 
+import org.kesler.cartreg.dao.AbstractEntity;
+
+import javax.persistence.*;
 import java.util.UUID;
 
 /**
  * Класс для набора картриджей
  */
-public class CartSet {
+@Entity
+public class CartSet extends AbstractEntity{
 
+    @Column(name="UUID",length=36)
     private String uuid = UUID.randomUUID().toString();
+
+    @ManyToOne
+    @JoinColumn(name = "CartTypeID", nullable = false)
     private CartType type;
+
+    @Enumerated(EnumType.STRING)
     private CartStatus status;
+
+    @Column(name = "Quantity")
     private Integer quantity;
+
+    @ManyToOne
+    @JoinColumn(name = "PlaceID")
     private Place place;
 
     public CartSet() {

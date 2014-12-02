@@ -1,7 +1,6 @@
 package org.kesler.cartreg.gui.place;
 
 import org.kesler.cartreg.domain.Place;
-import org.kesler.cartreg.domain.PlaceType;
 
 import java.util.Comparator;
 
@@ -17,12 +16,12 @@ public class PlaceComparator implements Comparator<Place> {
         if (o1!=null && o2==null) return -1;
 
         if (o1.equals(o2)) return 0;
-        if (o1.getType()== PlaceType.DIRECT && o2.getType()!=PlaceType.DIRECT)  return -1;
-        if (o1.getType()==PlaceType.STORAGE) {
-            if (o2.getType()==PlaceType.DIRECT) return 1;
-            if (o2.getType()==PlaceType.BRANCH) return -1;
+        if (o1.getType()== Place.Type.DIRECT && o2.getType()!=Place.Type.DIRECT)  return -1;
+        if (o1.getType()==Place.Type.STORAGE) {
+            if (o2.getType()==Place.Type.DIRECT) return 1;
+            if (o2.getType()==Place.Type.BRANCH) return -1;
         }
-        if (o1.getType()==PlaceType.BRANCH && o2.getType()!=PlaceType.BRANCH) return 1;
+        if (o1.getType()==Place.Type.BRANCH && o2.getType()!=Place.Type.BRANCH) return 1;
 
         if (o1.getType()==o2.getType()) return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
 
