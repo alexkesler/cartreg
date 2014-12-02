@@ -258,7 +258,7 @@ public class PlaceListController extends AbsractListController<Place> {
 
             log.debug("Sort observablePlaces ...");
             observablePlaces.sort(new PlaceComparator());
-            log.debug("List update complete.");
+            log.info("List update complete.");
         }
 
         @Override
@@ -292,7 +292,7 @@ public class PlaceListController extends AbsractListController<Place> {
             observablePlaces.add(newPlace);
             observablePlaces.sort(new PlaceComparator());
             placeListView.getSelectionModel().select(newPlace);
-            log.debug("Adding place complete");
+            log.info("Adding place complete");
         }
 
         @Override
@@ -327,7 +327,7 @@ public class PlaceListController extends AbsractListController<Place> {
             FXUtils.triggerUpdateListView(placeListView, place);
             observablePlaces.sort(new PlaceComparator());
             placeListView.getSelectionModel().select(place);
-            log.debug("Updating place complete");
+            log.info("Updating place complete");
         }
 
         @Override
@@ -360,9 +360,10 @@ public class PlaceListController extends AbsractListController<Place> {
         protected void succeeded() {
             super.succeeded();
 
+            log.debug("Removing place " + place.getCommonName());
             observablePlaces.removeAll(place);
 
-            log.debug("Removing place complete");
+            log.info("Removing place complete");
         }
 
         @Override

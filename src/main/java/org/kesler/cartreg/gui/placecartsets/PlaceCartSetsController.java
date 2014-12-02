@@ -1,13 +1,17 @@
 package org.kesler.cartreg.gui.placecartsets;
 
+import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Window;
+import org.controlsfx.dialog.Dialogs;
 import org.kesler.cartreg.domain.*;
 import org.kesler.cartreg.gui.AbsractListController;
 import org.kesler.cartreg.gui.cartset.CartSetController;
@@ -25,6 +29,7 @@ public class PlaceCartSetsController extends AbsractListController<CartSet> {
 
     @FXML protected Label placeLabel;
     @FXML protected TableView<CartSet> cartSetsTableView;
+    @FXML protected ProgressIndicator updateProgressIndicator;
 
 
     @Autowired
@@ -84,29 +89,20 @@ public class PlaceCartSetsController extends AbsractListController<CartSet> {
 
     @Override
     protected void updateContent() {
-        placeLabel.setText(place==null?"Не опеределено":place.getCommonName());
-        observableCartSets.clear();
-
-        Collection<CartSet> cartSets = cartSetService.getCartSetsByPlace(place);
-
-
-        if (statuses!=null) {
-            Iterator<CartSet> cartSetIterator = cartSets.iterator();
-            CartSet cartSet;
-            while (cartSetIterator.hasNext()) {
-                cartSet = cartSetIterator.next();
-                boolean fit = false;
-                for (CartStatus status:statuses) {
-                    if (status.equals(cartSet.getStatus())) {
-                        fit=true;
-                        break;
-                    }
-                }
-                if (!fit) cartSetIterator.remove();
-            }
+        if (place==null) {
+            placeLabel.setText("Не опеределено");
+            return;
         }
+        placeLabel.setText(place.getCommonName());
 
-        observableCartSets.addAll(cartSets);
+        log.info("Update CartSets list...");
+        UpdateListTask updateListTask = new UpdateListTask();
+        BooleanBinding runningBinding = updateListTask.stateProperty().isEqualTo(Task.State.RUNNING);
+        updateProgressIndicator.visibleProperty().bind(runningBinding);
+
+        new Thread(updateListTask).start();
+
+
     }
 
     @Override
@@ -134,8 +130,13 @@ public class PlaceCartSetsController extends AbsractListController<CartSet> {
 
         cartSetController.showAndWait(stage, cartSet);
         if (cartSetController.getResult()==Result.OK) {
-            cartSetService.addCartSet(cartSet);
-            updateContent();
+            log.info("Adding CartSet...");
+            AddTask addTask = new AddTask(cartSet);
+            BooleanBinding runningBinding = addTask.stateProperty().isEqualTo(Task.State.RUNNING);
+            updateProgressIndicator.visibleProperty().bind(runningBinding);
+
+            new Thread(addTask).start();
+
         }
     }
 
@@ -144,8 +145,12 @@ public class PlaceCartSetsController extends AbsractListController<CartSet> {
         if (selectedCartSet!=null) {
             cartSetController.showAndWait(stage,selectedCartSet);
             if (cartSetController.getResult()==Result.OK) {
-                cartSetService.updateCartSet(selectedCartSet);
-                updateContent();
+                log.info("Updating CartSet...");
+                UpdateTask updateTask = new UpdateTask(selectedCartSet);
+                BooleanBinding runningBinding = updateTask.stateProperty().isEqualTo(Task.State.RUNNING);
+                updateProgressIndicator.visibleProperty().bind(runningBinding);
+
+                new Thread(updateTask).start();
             }
 
         }
@@ -154,8 +159,169 @@ public class PlaceCartSetsController extends AbsractListController<CartSet> {
     private void removeCartSet() {
         CartSet selectedCartSet = cartSetsTableView.getSelectionModel().getSelectedItem();
         if (selectedCartSet!=null) {
-            cartSetService.removeCartSet(selectedCartSet);
+            log.info("Removing CartSet...");
+            RemoveTask removeTask = new RemoveTask(selectedCartSet);
+            BooleanBinding runningBinding = removeTask.stateProperty().isEqualTo(Task.State.RUNNING);
+            updateProgressIndicator.visibleProperty().bind(runningBinding);
+
+            new Thread(removeTask).start();
+        }
+    }
+
+    class UpdateListTask extends Task<Collection<CartSet>> {
+        @Override
+        protected Collection<CartSet> call() throws Exception {
+            log.debug("Reading CartSets for place: " + place.getCommonName());
+            Collection<CartSet> cartSets = cartSetService.getCartSetsByPlace(place);
+            log.debug("Server returned " + cartSets.size() + " CartSets");
+
+            log.debug("Filtering CartSets by statuses " + Arrays.deepToString(statuses));
+            if (statuses!=null) {
+                Iterator<CartSet> cartSetIterator = cartSets.iterator();
+                CartSet cartSet;
+                while (cartSetIterator.hasNext()) {
+                    cartSet = cartSetIterator.next();
+                    boolean fit = false;
+                    for (CartStatus status:statuses) {
+                        if (status.equals(cartSet.getStatus())) {
+                            fit=true;
+                            break;
+                        }
+                    }
+                    if (!fit) cartSetIterator.remove();
+                }
+            }
+
+            return cartSets;
+        }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+
+            log.debug("Update list...");
+            Collection<CartSet> cartSets = getValue();
+            observableCartSets.clear();
+            observableCartSets.addAll(cartSets);
+            log.info("Update CartSets complete");
+
+        }
+
+        @Override
+        protected void failed() {
+            super.failed();
+            Throwable exception = getException();
+            log.error("Error update CartSets list: " + exception, exception);
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Ошибка")
+                    .message("Ошибка при обновлении списка: " + exception)
+                    .showException(exception);
+        }
+    }
+
+    class AddTask extends Task<Void> {
+        private final CartSet cartSet;
+
+        AddTask(CartSet cartSet) {
+            this.cartSet = cartSet;
+        }
+        @Override
+        protected Void call() throws Exception {
+            log.debug("Adding CartSet...");
+
+            cartSetService.addCartSet(cartSet);
+
+            return null;
+        }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            log.info("Adding CartSet complete");
             updateContent();
+        }
+
+        @Override
+        protected void failed() {
+            super.failed();
+            Throwable exception = getException();
+            log.error("Error adding CartSet: " + exception, exception);
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Ошибка")
+                    .message("Ошибка при добавлении набора картриджей: " + exception)
+                    .showException(exception);
+        }
+    }
+
+    class UpdateTask extends Task<Void> {
+        private final CartSet cartSet;
+
+        UpdateTask(CartSet cartSet) {
+            this.cartSet = cartSet;
+        }
+        @Override
+        protected Void call() throws Exception {
+            log.debug("Updating CartSet...");
+
+            cartSetService.updateCartSet(cartSet);
+
+            return null;
+        }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            log.info("Updating CartSet complete");
+            updateContent();
+        }
+
+        @Override
+        protected void failed() {
+            super.failed();
+            Throwable exception = getException();
+            log.error("Error updating CartSet: " + exception, exception);
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Ошибка")
+                    .message("Ошибка при обновлении набора картриджей: " + exception)
+                    .showException(exception);
+        }
+    }
+
+    class RemoveTask extends Task<Void> {
+        private final CartSet cartSet;
+
+        RemoveTask(CartSet cartSet) {
+            this.cartSet = cartSet;
+        }
+        @Override
+        protected Void call() throws Exception {
+            log.debug("Removing CartSet...");
+
+            cartSetService.removeCartSet(cartSet);
+
+            return null;
+        }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            log.info("Removing CartSet complete");
+            updateContent();
+        }
+
+        @Override
+        protected void failed() {
+            super.failed();
+            Throwable exception = getException();
+            log.error("Error removing CartSet: " + exception, exception);
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Ошибка")
+                    .message("Ошибка при удалении набора картриджей: " + exception)
+                    .showException(exception);
         }
     }
 
