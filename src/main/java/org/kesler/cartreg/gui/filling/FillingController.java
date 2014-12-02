@@ -1,9 +1,12 @@
 package org.kesler.cartreg.gui.filling;
 
+import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Window;
@@ -33,6 +36,7 @@ public class FillingController extends AbstractController {
     @FXML protected TableView<CartSet> emptyCartSetsTableView;
     @FXML protected TableView<CartSet> filledCartSetsTableView;
     @FXML protected TableView<CartSet>  defectCartSetsTableView;
+    @FXML protected ProgressIndicator updateProgressIndicator;
 
     @Autowired
     protected PlaceService placeService;
@@ -287,16 +291,44 @@ public class FillingController extends AbstractController {
 
         // сохраняем поступившие наборы
         for (CartSet filledCartSet:observableFilledCartSets) {
-            cartSetService.addCartSet(filledCartSet);
+
+            log.info("Adding filled CartSet...");
+            AddTask addTask = new AddTask(filledCartSet);
+            BooleanBinding runningBinding = addTask.stateProperty().isEqualTo(Task.State.RUNNING);
+            updateProgressIndicator.visibleProperty().bind(runningBinding);
+
+            new Thread(addTask).start();
+
             CartSet sourceCartSet = filledToEmptyCartSets.get(filledCartSet);
-            cartSetService.updateCartSet(sourceCartSet);
+
+            log.info("Updating source CartSet...");
+            UpdateTask updateTask = new UpdateTask(sourceCartSet);
+            runningBinding = updateTask.stateProperty().isEqualTo(Task.State.RUNNING);
+            updateProgressIndicator.visibleProperty().bind(runningBinding);
+
+            new Thread(updateTask).start();
+
+
             saveCartSetChange(sourceCartSet,filledCartSet, CartSetChange.Type.FILL);
         }
         // сохраняем отправленные наборы
         for (CartSet defectCartSet:observableDefectCartSet) {
-            cartSetService.addCartSet(defectCartSet);
+            log.info("Adding defect CartSet...");
+            AddTask addTask = new AddTask(defectCartSet);
+            BooleanBinding runningBinding = addTask.stateProperty().isEqualTo(Task.State.RUNNING);
+            updateProgressIndicator.visibleProperty().bind(runningBinding);
+
+            new Thread(addTask).start();
+
             CartSet sourceCartSet = defectToEmptyCartSet.get(defectCartSet);
-            cartSetService.updateCartSet(sourceCartSet);
+
+            log.info("Updating source CartSet...");
+            UpdateTask updateTask = new UpdateTask(sourceCartSet);
+            runningBinding = updateTask.stateProperty().isEqualTo(Task.State.RUNNING);
+            updateProgressIndicator.visibleProperty().bind(runningBinding);
+
+            new Thread(updateTask).start();
+
             saveCartSetChange(sourceCartSet, defectCartSet, CartSetChange.Type.DEFECT);
         }
 
@@ -314,7 +346,13 @@ public class FillingController extends AbstractController {
         cartSetChange.setChangeDate(new Date());
 
 
-        cartSetChangeService.addChange(cartSetChange);
+        log.info("Saving change... ");
+        SaveChangeTask saveChangeTask = new SaveChangeTask(cartSetChange);
+
+        BooleanBinding runningBinding = saveChangeTask.stateProperty().isEqualTo(Task.State.RUNNING);
+        updateProgressIndicator.visibleProperty().bind(runningBinding);
+
+        new Thread(saveChangeTask).start();
     }
 
 
@@ -326,4 +364,118 @@ public class FillingController extends AbstractController {
         filledToEmptyCartSets.clear();
         defectToEmptyCartSet.clear();
     }
+
+
+
+
+    class AddTask extends Task<Void> {
+        private final CartSet cartSet;
+
+        AddTask(CartSet cartSet) {
+            this.cartSet = cartSet;
+        }
+        @Override
+        protected Void call() throws Exception {
+            log.debug("Adding CartSet...");
+
+            cartSetService.addCartSet(cartSet);
+
+            return null;
+        }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            log.info("Adding CartSet complete");
+            updateContent();
+        }
+
+        @Override
+        protected void failed() {
+            super.failed();
+            Throwable exception = getException();
+            log.error("Error adding CartSet: " + exception, exception);
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Ошибка")
+                    .message("Ошибка при добавлении набора картриджей: " + exception)
+                    .showException(exception);
+        }
+    }
+
+    class UpdateTask extends Task<Void> {
+        private final CartSet cartSet;
+
+        UpdateTask(CartSet cartSet) {
+            this.cartSet = cartSet;
+        }
+        @Override
+        protected Void call() throws Exception {
+            log.debug("Updating CartSet...");
+
+            cartSetService.updateCartSet(cartSet);
+
+            return null;
+        }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            log.info("Updating CartSet complete");
+            updateContent();
+        }
+
+        @Override
+        protected void failed() {
+            super.failed();
+            Throwable exception = getException();
+            log.error("Error updating CartSet: " + exception, exception);
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Ошибка")
+                    .message("Ошибка при обновлении набора картриджей: " + exception)
+                    .showException(exception);
+        }
+    }
+
+
+
+
+
+    class SaveChangeTask extends Task<Void> {
+        private CartSetChange cartSetChange;
+
+        SaveChangeTask(CartSetChange cartSetChange) {
+            this.cartSetChange = cartSetChange;
+        }
+
+
+        @Override
+        protected Void call() throws Exception {
+            log.debug("Saving change...");
+            cartSetChangeService.addChange(cartSetChange);
+            return null;
+        }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            log.info("Saving change complete.");
+        }
+
+        @Override
+        protected void failed() {
+            super.failed();
+            Throwable exception = getException();
+            log.error("Error saving change: " + exception, exception);
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Ошибка")
+                    .message("Ошибка при сохранении перемещения: " + exception)
+                    .showException(exception);
+        }
+    }
+
+
+
 }
