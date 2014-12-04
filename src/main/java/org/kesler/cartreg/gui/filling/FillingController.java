@@ -293,20 +293,20 @@ public class FillingController extends AbstractController {
         for (CartSet filledCartSet:observableFilledCartSets) {
 
             log.info("Adding filled CartSet...");
-            AddTask addTask = new AddTask(filledCartSet);
-            BooleanBinding runningBinding = addTask.stateProperty().isEqualTo(Task.State.RUNNING);
+            AddCartSetTask addCartSetTask = new AddCartSetTask(filledCartSet);
+            BooleanBinding runningBinding = addCartSetTask.stateProperty().isEqualTo(Task.State.RUNNING);
             updateProgressIndicator.visibleProperty().bind(runningBinding);
 
-            new Thread(addTask).start();
+            new Thread(addCartSetTask).start();
 
             CartSet sourceCartSet = filledToEmptyCartSets.get(filledCartSet);
 
             log.info("Updating source CartSet...");
-            UpdateTask updateTask = new UpdateTask(sourceCartSet);
-            runningBinding = updateTask.stateProperty().isEqualTo(Task.State.RUNNING);
+            UpdateCartSetTask updateCartSetTask = new UpdateCartSetTask(sourceCartSet);
+            runningBinding = updateCartSetTask.stateProperty().isEqualTo(Task.State.RUNNING);
             updateProgressIndicator.visibleProperty().bind(runningBinding);
 
-            new Thread(updateTask).start();
+            new Thread(updateCartSetTask).start();
 
 
             saveCartSetChange(sourceCartSet,filledCartSet, CartSetChange.Type.FILL);
@@ -314,20 +314,20 @@ public class FillingController extends AbstractController {
         // сохраняем отправленные наборы
         for (CartSet defectCartSet:observableDefectCartSet) {
             log.info("Adding defect CartSet...");
-            AddTask addTask = new AddTask(defectCartSet);
-            BooleanBinding runningBinding = addTask.stateProperty().isEqualTo(Task.State.RUNNING);
+            AddCartSetTask addCartSetTask = new AddCartSetTask(defectCartSet);
+            BooleanBinding runningBinding = addCartSetTask.stateProperty().isEqualTo(Task.State.RUNNING);
             updateProgressIndicator.visibleProperty().bind(runningBinding);
 
-            new Thread(addTask).start();
+            new Thread(addCartSetTask).start();
 
             CartSet sourceCartSet = defectToEmptyCartSet.get(defectCartSet);
 
             log.info("Updating source CartSet...");
-            UpdateTask updateTask = new UpdateTask(sourceCartSet);
-            runningBinding = updateTask.stateProperty().isEqualTo(Task.State.RUNNING);
+            UpdateCartSetTask updateCartSetTask = new UpdateCartSetTask(sourceCartSet);
+            runningBinding = updateCartSetTask.stateProperty().isEqualTo(Task.State.RUNNING);
             updateProgressIndicator.visibleProperty().bind(runningBinding);
 
-            new Thread(updateTask).start();
+            new Thread(updateCartSetTask).start();
 
             saveCartSetChange(sourceCartSet, defectCartSet, CartSetChange.Type.DEFECT);
         }
@@ -366,12 +366,12 @@ public class FillingController extends AbstractController {
     }
 
 
+    // Классы для обновления данных в отдельном потоке
 
-
-    class AddTask extends Task<Void> {
+    class AddCartSetTask extends Task<Void> {
         private final CartSet cartSet;
 
-        AddTask(CartSet cartSet) {
+        AddCartSetTask(CartSet cartSet) {
             this.cartSet = cartSet;
         }
         @Override
@@ -403,10 +403,10 @@ public class FillingController extends AbstractController {
         }
     }
 
-    class UpdateTask extends Task<Void> {
+    class UpdateCartSetTask extends Task<Void> {
         private final CartSet cartSet;
 
-        UpdateTask(CartSet cartSet) {
+        UpdateCartSetTask(CartSet cartSet) {
             this.cartSet = cartSet;
         }
         @Override
@@ -437,9 +437,6 @@ public class FillingController extends AbstractController {
                     .showException(exception);
         }
     }
-
-
-
 
 
     class SaveChangeTask extends Task<Void> {
@@ -475,7 +472,5 @@ public class FillingController extends AbstractController {
                     .showException(exception);
         }
     }
-
-
 
 }

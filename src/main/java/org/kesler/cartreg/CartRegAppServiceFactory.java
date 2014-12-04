@@ -79,13 +79,13 @@ public class CartRegAppServiceFactory {
 
     private Properties getHibernateProperties() {
         Properties prop = new Properties();
-//        prop.put("hibernate.connection.driver_class","com.mysql.jdbc.Driver");
-//        prop.put("hibernate.connection.url","jdbc:mysql://10.10.0.170:3306/cartreg");
-//        prop.put("hibernate.connection.username","croper");
-//        prop.put("hibernate.connection.password","Qwerty123");
+        prop.put("hibernate.connection.driver_class","com.mysql.jdbc.Driver");
+        prop.put("hibernate.connection.url","jdbc:mysql://10.10.0.170:3306/cartreg");
+        prop.put("hibernate.connection.username","croper");
+        prop.put("hibernate.connection.password","Qwerty123");
 //        prop.put("hibernate.connection.pool_size","1");
-//        prop.put("hibernate.c3p0.min_size", "5");
-//        prop.put("hibernate.c3p0.max_size", "20");
+        prop.put("hibernate.c3p0.min_size", "5");
+        prop.put("hibernate.c3p0.max_size", "20");
         prop.put("hibernate.format_sql", "true");
         prop.put("hibernate.show_sql", "true");
         prop.put("hibernate.hbm2ddl.auto","update");

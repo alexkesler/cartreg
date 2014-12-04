@@ -20,7 +20,7 @@
             </Label>
          </children>
       </AnchorPane>
-      <Accordion VBox.vgrow="ALWAYS" expandedPane="$mainPane">
+      <Accordion VBox.vgrow="ALWAYS">
         <panes>
           <TitledPane fx:id="mainPane" animated="true" text="Принято">
                <content>
@@ -156,6 +156,7 @@
          <items>
             <Button defaultButton="true" mnemonicParsing="false" onAction="#handleOkButtonAction" text="Провести" />
             <Button mnemonicParsing="false" onAction="#handleCancelButtonAction" text="Отмена" />
+            <ProgressIndicator fx:id="updateProgressIndicator" prefHeight="16.0" prefWidth="27.0" visible="false" />
          </items>
       </ToolBar>
    </children>

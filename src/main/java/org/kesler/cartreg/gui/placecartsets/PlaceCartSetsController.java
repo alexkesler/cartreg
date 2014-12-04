@@ -16,6 +16,8 @@ import org.kesler.cartreg.domain.*;
 import org.kesler.cartreg.gui.AbsractListController;
 import org.kesler.cartreg.gui.cartset.CartSetController;
 import org.kesler.cartreg.service.CartSetService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -131,11 +133,11 @@ public class PlaceCartSetsController extends AbsractListController<CartSet> {
         cartSetController.showAndWait(stage, cartSet);
         if (cartSetController.getResult()==Result.OK) {
             log.info("Adding CartSet...");
-            AddTask addTask = new AddTask(cartSet);
-            BooleanBinding runningBinding = addTask.stateProperty().isEqualTo(Task.State.RUNNING);
+            AddCartSetTask addCartSetTask = new AddCartSetTask(cartSet);
+            BooleanBinding runningBinding = addCartSetTask.stateProperty().isEqualTo(Task.State.RUNNING);
             updateProgressIndicator.visibleProperty().bind(runningBinding);
 
-            new Thread(addTask).start();
+            new Thread(addCartSetTask).start();
 
         }
     }
@@ -146,11 +148,11 @@ public class PlaceCartSetsController extends AbsractListController<CartSet> {
             cartSetController.showAndWait(stage,selectedCartSet);
             if (cartSetController.getResult()==Result.OK) {
                 log.info("Updating CartSet...");
-                UpdateTask updateTask = new UpdateTask(selectedCartSet);
-                BooleanBinding runningBinding = updateTask.stateProperty().isEqualTo(Task.State.RUNNING);
+                UpdateCartsetTask updateCartsetTask = new UpdateCartsetTask(selectedCartSet);
+                BooleanBinding runningBinding = updateCartsetTask.stateProperty().isEqualTo(Task.State.RUNNING);
                 updateProgressIndicator.visibleProperty().bind(runningBinding);
 
-                new Thread(updateTask).start();
+                new Thread(updateCartsetTask).start();
             }
 
         }
@@ -168,7 +170,12 @@ public class PlaceCartSetsController extends AbsractListController<CartSet> {
         }
     }
 
+
+    // Классы для обновления данных в отдельном потоке
+
     class UpdateListTask extends Task<Collection<CartSet>> {
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
+
         @Override
         protected Collection<CartSet> call() throws Exception {
             log.debug("Reading CartSets for place: " + place.getCommonName());
@@ -220,10 +227,11 @@ public class PlaceCartSetsController extends AbsractListController<CartSet> {
         }
     }
 
-    class AddTask extends Task<Void> {
+    class AddCartSetTask extends Task<Void> {
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
         private final CartSet cartSet;
 
-        AddTask(CartSet cartSet) {
+        AddCartSetTask(CartSet cartSet) {
             this.cartSet = cartSet;
         }
         @Override
@@ -255,10 +263,11 @@ public class PlaceCartSetsController extends AbsractListController<CartSet> {
         }
     }
 
-    class UpdateTask extends Task<Void> {
+    class UpdateCartsetTask extends Task<Void> {
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
         private final CartSet cartSet;
 
-        UpdateTask(CartSet cartSet) {
+        UpdateCartsetTask(CartSet cartSet) {
             this.cartSet = cartSet;
         }
         @Override
@@ -291,6 +300,7 @@ public class PlaceCartSetsController extends AbsractListController<CartSet> {
     }
 
     class RemoveTask extends Task<Void> {
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
         private final CartSet cartSet;
 
         RemoveTask(CartSet cartSet) {

@@ -23,6 +23,8 @@ import org.kesler.cartreg.gui.util.QuantityController;
 import org.kesler.cartreg.service.CartSetChangeService;
 import org.kesler.cartreg.service.CartSetService;
 import org.kesler.cartreg.util.FXUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -220,21 +222,21 @@ public class MoveController extends AbstractController {
         for (CartSet moveCartSet:observableCartSets) {
 
             log.info("Adding move CartSet...");
-            AddTask addTask = new AddTask(moveCartSet);
-            BooleanBinding runningBinding = addTask.stateProperty().isEqualTo(Task.State.RUNNING);
+            AddCartSetTask addCartSetTask = new AddCartSetTask(moveCartSet);
+            BooleanBinding runningBinding = addCartSetTask.stateProperty().isEqualTo(Task.State.RUNNING);
             updateProgressIndicator.visibleProperty().bind(runningBinding);
 
-            new Thread(addTask).start();
+            new Thread(addCartSetTask).start();
 
 
             CartSet sourceCartSet = toFromCartSets.get(moveCartSet);
 
             log.info("Updating source CartSet...");
-            UpdateTask updateTask = new UpdateTask(sourceCartSet);
-            runningBinding = updateTask.stateProperty().isEqualTo(Task.State.RUNNING);
+            UpdateCartSetTask updateCartSetTask = new UpdateCartSetTask(sourceCartSet);
+            runningBinding = updateCartSetTask.stateProperty().isEqualTo(Task.State.RUNNING);
             updateProgressIndicator.visibleProperty().bind(runningBinding);
 
-            new Thread(updateTask).start();
+            new Thread(updateCartSetTask).start();
 
             saveCartSetChange(sourceCartSet,moveCartSet);
         }
@@ -309,10 +311,14 @@ public class MoveController extends AbstractController {
     }
 
 
-    class AddTask extends Task<Void> {
+
+    // Классы для сохранения данных в отдельном потоке
+
+    class AddCartSetTask extends Task<Void> {
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
         private final CartSet cartSet;
 
-        AddTask(CartSet cartSet) {
+        AddCartSetTask(CartSet cartSet) {
             this.cartSet = cartSet;
         }
         @Override
@@ -344,10 +350,11 @@ public class MoveController extends AbstractController {
         }
     }
 
-    class UpdateTask extends Task<Void> {
+    class UpdateCartSetTask extends Task<Void> {
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
         private final CartSet cartSet;
 
-        UpdateTask(CartSet cartSet) {
+        UpdateCartSetTask(CartSet cartSet) {
             this.cartSet = cartSet;
         }
         @Override
@@ -379,9 +386,8 @@ public class MoveController extends AbstractController {
         }
     }
 
-
-
     class SaveChangeTask extends Task<Void> {
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
         private CartSetChange cartSetChange;
 
         SaveChangeTask(CartSetChange cartSetChange) {
@@ -414,7 +420,5 @@ public class MoveController extends AbstractController {
                     .showException(exception);
         }
     }
-
-
 
 }

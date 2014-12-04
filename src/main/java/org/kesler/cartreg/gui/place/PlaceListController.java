@@ -94,8 +94,8 @@ public class PlaceListController extends AbsractListController<Place> {
 
     @Override
     public void updateContent() {
-        observablePlaces.clear();
 
+        log.info("Updating Places List");
         UpdateListTask updateListTask = new UpdateListTask();
 
         BooleanBinding runningBinding = updateListTask.stateProperty().isEqualTo(Task.State.RUNNING);
@@ -155,12 +155,12 @@ public class PlaceListController extends AbsractListController<Place> {
         placeController.showAndWait(stage, newPlace, placeTypes);
         if (placeController.getResult() == AbstractController.Result.OK) {
             log.info("Saving Place: " + newPlace.getCommonName());
-            AddTask addTask = new AddTask(newPlace);
+            AddPlaceTask addPlaceTask = new AddPlaceTask(newPlace);
 
-            BooleanBinding runningBinding = addTask.stateProperty().isEqualTo(Task.State.RUNNING);
+            BooleanBinding runningBinding = addPlaceTask.stateProperty().isEqualTo(Task.State.RUNNING);
             updateProgressIndicator.visibleProperty().bind(runningBinding);
 
-            new Thread(addTask).start();
+            new Thread(addPlaceTask).start();
         }
 
     }
@@ -180,11 +180,11 @@ public class PlaceListController extends AbsractListController<Place> {
         placeController.showAndWait(stage, selectedPlace, placeTypes);
         if (placeController.getResult() == AbstractController.Result.OK) {
             log.info("Updating place: " + selectedPlace.getCommonName());
-            UpdateTask updateTask = new UpdateTask(selectedPlace);
-            BooleanBinding runningBinding = updateTask.stateProperty().isEqualTo(Task.State.RUNNING);
+            UpdatePlaceTask updatePlaceTask = new UpdatePlaceTask(selectedPlace);
+            BooleanBinding runningBinding = updatePlaceTask.stateProperty().isEqualTo(Task.State.RUNNING);
             updateProgressIndicator.visibleProperty().bind(runningBinding);
 
-            new Thread(updateTask).start();
+            new Thread(updatePlaceTask).start();
         }
 
     }
@@ -208,11 +208,11 @@ public class PlaceListController extends AbsractListController<Place> {
                 .showConfirm();
         if (response == Dialog.ACTION_YES) {
             log.info("Removing place: " + selectedPlace.getCommonName());
-            RemoveTask removeTask = new RemoveTask(selectedPlace);
-            BooleanBinding runningBinding = removeTask.stateProperty().isEqualTo(Task.State.RUNNING);
+            RemovePlaceTask removePlaceTask = new RemovePlaceTask(selectedPlace);
+            BooleanBinding runningBinding = removePlaceTask.stateProperty().isEqualTo(Task.State.RUNNING);
             updateProgressIndicator.visibleProperty().bind(runningBinding);
 
-            new Thread(removeTask).start();
+            new Thread(removePlaceTask).start();
         }
     }
 
@@ -227,7 +227,12 @@ public class PlaceListController extends AbsractListController<Place> {
 
     }
 
+
+    // Классы для обновления данных в отдельном потоке
+
     class UpdateListTask extends Task<Collection<Place>> {
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
+
         @Override
         protected Collection<Place> call() throws Exception {
             log.debug("Updating places list...");
@@ -273,10 +278,11 @@ public class PlaceListController extends AbsractListController<Place> {
         }
     }
 
-    class AddTask extends Task<Void> {
+    class AddPlaceTask extends Task<Void> {
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
         private final Place newPlace;
 
-        AddTask(Place newPlace) {
+        AddPlaceTask(Place newPlace) {
             this.newPlace = newPlace;
         }
         @Override
@@ -308,10 +314,11 @@ public class PlaceListController extends AbsractListController<Place> {
         }
     }
 
-    class UpdateTask extends Task<Void> {
+    class UpdatePlaceTask extends Task<Void> {
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
         private final Place place;
 
-        UpdateTask(Place place) {
+        UpdatePlaceTask(Place place) {
             this.place = place;
         }
         @Override
@@ -343,10 +350,11 @@ public class PlaceListController extends AbsractListController<Place> {
         }
     }
 
-    class RemoveTask extends Task<Void> {
+    class RemovePlaceTask extends Task<Void> {
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
         private final Place place;
 
-        RemoveTask(Place place) {
+        RemovePlaceTask(Place place) {
             this.place = place;
         }
         @Override
