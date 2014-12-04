@@ -1,13 +1,17 @@
 package org.kesler.cartreg.gui.arrival;
 
+import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Window;
+import org.controlsfx.dialog.Dialogs;
 import org.kesler.cartreg.domain.*;
 import org.kesler.cartreg.gui.AbstractController;
 import org.kesler.cartreg.gui.place.PlaceListController;
@@ -15,6 +19,8 @@ import org.kesler.cartreg.gui.cartset.CartSetController;
 import org.kesler.cartreg.service.CartSetChangeService;
 import org.kesler.cartreg.service.CartSetService;
 import org.kesler.cartreg.util.FXUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +36,7 @@ public class ArrivalController extends AbstractController {
 
     @FXML protected Label placeLabel;
     @FXML protected TableView<CartSet> cartSetTableView;
+    @FXML protected ProgressIndicator updateProgressIndicator;
 
     @Autowired
     protected PlaceListController placeListController;
@@ -95,7 +102,14 @@ public class ArrivalController extends AbstractController {
 
 
         for(CartSet cartSet:observableCartSets) {
-            cartSetService.addCartSet(cartSet);
+
+            log.info("Adding CartSet...");
+            AddCartSetTask addCartSetTask = new AddCartSetTask(cartSet);
+            BooleanBinding runningBinding = addCartSetTask.stateProperty().isEqualTo(Task.State.RUNNING);
+            updateProgressIndicator.visibleProperty().bind(runningBinding);
+
+            new Thread(addCartSetTask).start();
+
 
             // Сохраняем перемещение
             CartSetChange cartSetChange = new CartSetChange();
@@ -109,7 +123,15 @@ public class ArrivalController extends AbstractController {
             cartSetChange.setQuantity(cartSet.getQuantity());
             cartSetChange.setChangeDate(new Date());
 
-            cartSetChangeService.addChange(cartSetChange);
+
+            log.info("Saving change... ");
+            SaveChangeTask saveChangeTask = new SaveChangeTask(cartSetChange);
+
+            runningBinding = saveChangeTask.stateProperty().isEqualTo(Task.State.RUNNING);
+            updateProgressIndicator.visibleProperty().bind(runningBinding);
+
+            new Thread(saveChangeTask).start();
+
         }
     }
 
@@ -151,4 +173,82 @@ public class ArrivalController extends AbstractController {
             observableCartSets.remove(selectedCartSet);
         }
     }
+
+
+    // Классы для сохранения данных в отдельном потоке
+
+    class AddCartSetTask extends Task<Void> {
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
+        private final CartSet cartSet;
+
+        AddCartSetTask(CartSet cartSet) {
+            this.cartSet = cartSet;
+        }
+        @Override
+        protected Void call() throws Exception {
+            log.debug("Adding CartSet...");
+
+            cartSetService.addCartSet(cartSet);
+
+            return null;
+        }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            log.info("Adding CartSet complete");
+            updateContent();
+        }
+
+        @Override
+        protected void failed() {
+            super.failed();
+            Throwable exception = getException();
+            log.error("Error adding CartSet: " + exception, exception);
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Ошибка")
+                    .message("Ошибка при добавлении набора картриджей: " + exception)
+                    .showException(exception);
+        }
+    }
+
+
+    class SaveChangeTask extends Task<Void> {
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
+        private CartSetChange cartSetChange;
+
+        SaveChangeTask(CartSetChange cartSetChange) {
+            this.cartSetChange = cartSetChange;
+        }
+
+
+        @Override
+        protected Void call() throws Exception {
+            log.debug("Saving change...");
+            cartSetChangeService.addChange(cartSetChange);
+            return null;
+        }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            log.info("Saving change complete.");
+        }
+
+        @Override
+        protected void failed() {
+            super.failed();
+            Throwable exception = getException();
+            log.error("Error saving change: " + exception, exception);
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Ошибка")
+                    .message("Ошибка при сохранении перемещения: " + exception)
+                    .showException(exception);
+        }
+    }
+
+
+
 }

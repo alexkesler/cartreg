@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -21,24 +22,43 @@ public class CartTypeDAOImpl implements CartTypeDAO {
 
     @Override
     public void addCartType(CartType cartType) {
+
+        sessionFactory.getCurrentSession().beginTransaction();
         sessionFactory.getCurrentSession().save(cartType);
+        sessionFactory.getCurrentSession().getTransaction().commit();
+
     }
 
     @Override
     public void updateCartType(CartType cartType) {
+
+        sessionFactory.getCurrentSession().beginTransaction();
         sessionFactory.getCurrentSession().update(cartType);
+        sessionFactory.getCurrentSession().getTransaction().commit();
+
     }
 
     @Override
     public void removeCartType(CartType cartType) {
+
+        sessionFactory.getCurrentSession().beginTransaction();
         sessionFactory.getCurrentSession().delete(cartType);
+        sessionFactory.getCurrentSession().getTransaction().commit();
+
     }
 
     @Transactional
     @Override
     public Collection<CartType> getAllCartTypes() {
-        return sessionFactory.getCurrentSession()
+
+        Collection<CartType> cartTypes = new ArrayList<CartType>();
+        sessionFactory.getCurrentSession().beginTransaction();
+        cartTypes = sessionFactory.getCurrentSession()
                 .createCriteria(CartType.class)
                 .list();
+        sessionFactory.getCurrentSession().getTransaction().commit();
+
+        return cartTypes;
+
     }
 }

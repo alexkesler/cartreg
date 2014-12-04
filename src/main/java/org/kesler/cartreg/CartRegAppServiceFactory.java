@@ -1,6 +1,5 @@
 package org.kesler.cartreg;
 
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.hibernate.SessionFactory;
 import org.kesler.cartreg.dao.CartSetChangeDAO;
 import org.kesler.cartreg.dao.CartSetDAO;
@@ -91,6 +90,7 @@ public class CartRegAppServiceFactory {
         prop.put("hibernate.hbm2ddl.auto","update");
         prop.put("hibernate.dialect",
                 "org.hibernate.dialect.MySQL5Dialect");
+        prop.put("hibernate.current_session_context_class","thread");
 
         return prop;
     }

@@ -240,16 +240,18 @@ public class PlaceListController extends AbsractListController<Place> {
             Collection<Place> places = placeService.getAllPlaces();
             log.debug("Server return " + places.size() + " places");
             Iterator<Place> placeIterator = places.iterator();
-            log.debug("Filtering by types " + Arrays.deepToString(placeTypes));
-            while (placeIterator.hasNext()) {
-                Place place = placeIterator.next();
-                boolean fit = false;
-                for (Place.Type placeType:placeTypes) {
-                    if (place.getType().equals(placeType)) fit=true;
+            if (placeTypes!=null) {
+                log.debug("Filtering by types " + Arrays.deepToString(placeTypes));
+                while (placeIterator.hasNext()) {
+                    Place place = placeIterator.next();
+                    boolean fit = false;
+                    for (Place.Type placeType:placeTypes) {
+                        if (place.getType().equals(placeType)) fit=true;
+                    }
+                    if (!fit) placeIterator.remove();
                 }
-                if (!fit) placeIterator.remove();
+                log.debug("Filtered " + places.size() + " places");
             }
-            log.debug("Filtered " + places.size() + " places");
             return places;
         }
 

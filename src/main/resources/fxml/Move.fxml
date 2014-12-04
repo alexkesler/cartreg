@@ -104,6 +104,7 @@
          <items>
             <Button defaultButton="true" mnemonicParsing="false" onAction="#handleOkButtonAction" text="Переместить" />
             <Button mnemonicParsing="false" onAction="#handleCancelButtonAction" text="Отмена" />
+            <ProgressIndicator fx:id="updateProgressIndicator" prefHeight="16.0" prefWidth="27.0" visible="false" />
          </items>
       </ToolBar>
    </children>

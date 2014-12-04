@@ -65,15 +65,25 @@ public class PlaceDAOImpl implements PlaceDAO {
 
     @Override
     public Collection<Place> getStorages() {
-        return sessionFactory.getCurrentSession().createCriteria(Place.class)
+        Collection<Place> places = new ArrayList<Place>();
+        sessionFactory.getCurrentSession().beginTransaction();
+        places = sessionFactory.getCurrentSession().createCriteria(Place.class)
                 .add(Restrictions.eq("type", Place.Type.STORAGE))
                 .list();
+        sessionFactory.getCurrentSession().getTransaction().commit();
+
+        return places;
     }
 
     @Override
     public Collection<Place> getBranches() {
-        return sessionFactory.getCurrentSession().createCriteria(Place.class)
+        Collection<Place> places = new ArrayList<Place>();
+        sessionFactory.getCurrentSession().beginTransaction();
+        places = sessionFactory.getCurrentSession().createCriteria(Place.class)
                 .add(Restrictions.eq("type", Place.Type.BRANCH))
                 .list();
+        sessionFactory.getCurrentSession().getTransaction().commit();
+
+        return places;
     }
 }
