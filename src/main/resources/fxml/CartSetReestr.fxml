@@ -1,37 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.cell.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
-
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 
 <VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="543.0" prefWidth="644.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.kesler.cartreg.gui.cartsetreestr.CartSetReestrController">
    <children>
       <AnchorPane prefHeight="87.0" prefWidth="418.0" />
       <TableView fx:id="cartSetTableView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-         <VBox.margin>
+          <placeholder>
+              <javafx.scene.text.Text text="Нет данных" />
+          </placeholder>
+          <VBox.margin>
             <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-         </VBox.margin>
-         <columns>
-            <TableColumn maxWidth="500.0" minWidth="100.0" prefWidth="300.0" text="Размещение" sortable="false">
+          </VBox.margin>
+          <columns>
+            <TableColumn maxWidth="500.0" minWidth="100.0" prefWidth="300.0" sortable="false" text="Размещение">
                 <cellValueFactory>
                     <PropertyValueFactory property="placeString" />
                 </cellValueFactory>
             </TableColumn>
 
-            <TableColumn maxWidth="200.0" minWidth="100.0" prefWidth="200.0" text="Модель" sortable="false">
+            <TableColumn maxWidth="200.0" minWidth="100.0" prefWidth="200.0" sortable="false" text="Модель">
                 <cellValueFactory>
                     <PropertyValueFactory property="model" />
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn maxWidth="200.0" minWidth="70.0" prefWidth="150.0" text="Состояние" sortable="false">
+            <TableColumn maxWidth="200.0" minWidth="70.0" prefWidth="150.0" sortable="false" text="Состояние">
                 <cellValueFactory>
                     <PropertyValueFactory property="statusDesc" />
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn maxWidth="70.0" minWidth="50.0" prefWidth="70.0" text="Кол-во" sortable="false">
+            <TableColumn maxWidth="70.0" minWidth="50.0" prefWidth="70.0" sortable="false" text="Кол-во">
                 <cellValueFactory>
                     <PropertyValueFactory property="quantity" />
                 </cellValueFactory>
@@ -44,6 +48,7 @@
       <ToolBar fx:id="closeButtonToolBar" prefHeight="40.0" prefWidth="200.0">
          <items>
             <Button mnemonicParsing="false" onAction="#handleCloseButtonAction" text="Закрыть" />
+            <ProgressIndicator fx:id="updateProgressIndicator" prefHeight="16.0" prefWidth="27.0" visible="false" />
          </items>
       </ToolBar>
    </children>

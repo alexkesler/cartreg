@@ -99,16 +99,28 @@ public class PlaceListController extends AbsractListController<Place> {
         UpdateListTask updateListTask = new UpdateListTask();
 
         BooleanBinding runningBinding = updateListTask.stateProperty().isEqualTo(Task.State.RUNNING);
-
         updateProgressIndicator.visibleProperty().bind(runningBinding);
 
+        observablePlaces.clear();
         new Thread(updateListTask).start();
 
     }
 
+
     @Override
-    protected void updateResult() {
+    protected void handleOk() {
         selectedItem = placeListView.getSelectionModel().getSelectedItem();
+
+        if (select && selectedItem == null) {
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Внимание")
+                    .message("Ничего не выбрано")
+                    .showWarning();
+        } else {
+            result = Result.OK;
+            stage.hide();
+        }
     }
 
     // Обработчики кнопок управления списком сотрудников
@@ -260,7 +272,6 @@ public class PlaceListController extends AbsractListController<Place> {
             Collection<Place> places = getValue();
 
             log.debug("Update observablePlaces ...");
-            observablePlaces.clear();
             observablePlaces.addAll(places);
 
             log.debug("Sort observablePlaces ...");

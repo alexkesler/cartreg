@@ -53,6 +53,7 @@
             <TreeView fx:id="cartTreeView" layoutX="25.0" layoutY="59.0" prefHeight="252.0" prefWidth="590.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="59.0">
 
             </TreeView>
+            <ProgressIndicator fx:id="updateProgressIndicator1" layoutX="489.0" layoutY="20.0" prefHeight="26.0" prefWidth="27.0" visible="false" AnchorPane.rightAnchor="124.0" AnchorPane.topAnchor="20.0" />
          </children></AnchorPane>
       <GridPane hgap="5">
         <columnConstraints>

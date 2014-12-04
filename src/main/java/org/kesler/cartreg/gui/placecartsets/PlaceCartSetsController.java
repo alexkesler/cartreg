@@ -102,14 +102,27 @@ public class PlaceCartSetsController extends AbsractListController<CartSet> {
         BooleanBinding runningBinding = updateListTask.stateProperty().isEqualTo(Task.State.RUNNING);
         updateProgressIndicator.visibleProperty().bind(runningBinding);
 
+        observableCartSets.clear();
         new Thread(updateListTask).start();
 
 
     }
 
     @Override
-    protected void updateResult() {
+    protected void handleOk() {
         selectedItem = cartSetsTableView.getSelectionModel().getSelectedItem();
+
+        if (select && selectedItem == null) {
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Внимание")
+                    .message("Ничего не выбрано")
+                    .showWarning();
+        } else {
+            result = Result.OK;
+            stage.hide();
+        }
+
     }
 
     private void addCartSet() {
@@ -208,7 +221,6 @@ public class PlaceCartSetsController extends AbsractListController<CartSet> {
 
             log.debug("Update list...");
             Collection<CartSet> cartSets = getValue();
-            observableCartSets.clear();
             observableCartSets.addAll(cartSets);
             log.info("Update CartSets complete");
 

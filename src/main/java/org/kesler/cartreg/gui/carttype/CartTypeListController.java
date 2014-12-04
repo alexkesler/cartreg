@@ -80,13 +80,26 @@ public class CartTypeListController extends AbsractListController<CartType> {
         BooleanBinding runningBinding = updateListTask.stateProperty().isEqualTo(Task.State.RUNNING);
         updateProgressIndicator.visibleProperty().bind(runningBinding);
 
+        observableCartTypes.clear();
         new Thread(updateListTask).start();
 
     }
 
     @Override
-    protected void updateResult() {
+    protected void handleOk() {
         selectedItem = cartTypeListView.getSelectionModel().getSelectedItem();
+
+        if (select && selectedItem == null) {
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Внимание")
+                    .message("Ничего не выбрано")
+                    .showWarning();
+        } else {
+            result = Result.OK;
+            stage.hide();
+        }
+
     }
 
     @FXML protected void handleAddCartTypeButtonAction(ActionEvent ev) {
@@ -189,7 +202,6 @@ public class CartTypeListController extends AbsractListController<CartType> {
             Collection<CartType> cartTypes = getValue();
 
             log.debug("Update observableCartTypes ...");
-            observableCartTypes.clear();
             observableCartTypes.addAll(cartTypes);
 
             log.info("List update complete.");

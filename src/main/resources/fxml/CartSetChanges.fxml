@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.scene.control.cell.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
@@ -11,7 +12,10 @@
    <children>
       <AnchorPane prefHeight="63.0" prefWidth="644.0" />
       <TableView fx:id="cartSetChangesTableView" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
-         <VBox.margin>
+          <placeholder>
+              <javafx.scene.text.Text text="Нет данных" />
+          </placeholder>
+          <VBox.margin>
             <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
          </VBox.margin>
          <columns>
@@ -71,6 +75,7 @@
       <ToolBar fx:id="closeButtonToolBar" prefHeight="40.0" prefWidth="200.0">
          <items>
             <Button mnemonicParsing="false" onAction="#handleCloseButtonAction" text="Закрыть" />
+            <ProgressIndicator fx:id="updateProgressIndicator" prefHeight="16.0" prefWidth="27.0" visible="false" />
          </items>
       </ToolBar>
    </children>
