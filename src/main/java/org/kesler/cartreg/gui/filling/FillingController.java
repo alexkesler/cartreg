@@ -142,17 +142,19 @@ public class FillingController extends AbstractController {
 
     @FXML
     protected void handleEditFiledCartSetButtonAction(ActionEvent ev) {
-
+        editFilledCartSet();
     }
 
     @FXML
     protected void handleFiledCartSetsTableViewMouseClick(MouseEvent ev) {
-
+        if (ev.getClickCount()==2) {
+            editFilledCartSet();
+        }
     }
 
     @FXML
     protected void handleRemoveFiledCartSetButtonAction(ActionEvent ev) {
-
+        removeFilledCartSet();
     }
 
 
@@ -160,17 +162,19 @@ public class FillingController extends AbstractController {
 
     @FXML
     protected void handleEditDefectCartSetButtonAction(ActionEvent ev) {
-
+        editDefectCartSet();
     }
 
     @FXML
     protected void handleDefectCartSetsTableViewMouseClick(MouseEvent ev) {
-
+        if (ev.getClickCount()==2) {
+            editDefectCartSet();
+        }
     }
 
     @FXML
     protected void handleRemoveDefectCartSetButtonAction(ActionEvent ev) {
-
+        removeDefectCartSet();
     }
 
     @Override
@@ -301,11 +305,67 @@ public class FillingController extends AbstractController {
 
     // Обработчики для панели Заправленые
 
+    private void editFilledCartSet() {
+        CartSet selectedFilledCartSet = filledCartSetsTableView.getSelectionModel().getSelectedItem();
+        if (selectedFilledCartSet!=null) {
+            CartSet selectedEmptyCartSet = filledToEmptyCartSets.get(selectedFilledCartSet);
+            Integer filledQuantity = selectedFilledCartSet.getQuantity();
+            Integer fullquantity = filledQuantity + selectedEmptyCartSet.getQuantity();
+            quantityController.showAndWait(stage, filledQuantity, fullquantity);
+            if (quantityController.getResult()==Result.OK) {
+                filledQuantity = quantityController.getQuantity();
+                selectedFilledCartSet.setQuantity(filledQuantity);
+                selectedEmptyCartSet.setQuantity(fullquantity-filledQuantity);
+                updateContent();
+            }
+        }
+    }
 
+    private void removeFilledCartSet() {
+        CartSet selectedFilledCartSet = filledCartSetsTableView.getSelectionModel().getSelectedItem();
+        if (selectedFilledCartSet!=null) {
+            CartSet selectedEmptyCartSet = filledToEmptyCartSets.get(selectedFilledCartSet);
+            Integer filledQuantity = selectedFilledCartSet.getQuantity();
+            Integer fullquantity = filledQuantity + selectedEmptyCartSet.getQuantity();
+            selectedEmptyCartSet.setQuantity(fullquantity);
+            filledToEmptyCartSets.remove(selectedFilledCartSet);
+            observableFilledCartSets.removeAll(selectedFilledCartSet);
+            updateContent();
+        }
+    }
 
 
     // Обработчики для панели Неисправные
 
+    private void editDefectCartSet() {
+        CartSet selectedDefectCartSet = defectCartSetsTableView.getSelectionModel().getSelectedItem();
+        if (selectedDefectCartSet!=null) {
+            CartSet selectedEmptyCartSet = defectToEmptyCartSet.get(selectedDefectCartSet);
+            Integer defectQuantity = selectedDefectCartSet.getQuantity();
+            Integer fullquantity = defectQuantity + selectedEmptyCartSet.getQuantity();
+            quantityController.showAndWait(stage, defectQuantity, fullquantity);
+            if (quantityController.getResult()==Result.OK) {
+                defectQuantity = quantityController.getQuantity();
+                selectedDefectCartSet.setQuantity(defectQuantity);
+                selectedEmptyCartSet.setQuantity(fullquantity-defectQuantity);
+                updateContent();
+            }
+        }
+
+    }
+
+    private void removeDefectCartSet() {
+        CartSet selectedDefectCartSet = defectCartSetsTableView.getSelectionModel().getSelectedItem();
+        if (selectedDefectCartSet!=null) {
+            CartSet selectedEmptyCartSet = defectToEmptyCartSet.get(selectedDefectCartSet);
+            Integer defectQuantity = selectedDefectCartSet.getQuantity();
+            Integer fullquantity = defectQuantity + selectedEmptyCartSet.getQuantity();
+            selectedEmptyCartSet.setQuantity(fullquantity);
+            defectToEmptyCartSet.remove(selectedDefectCartSet);
+            observableDefectCartSet.removeAll(selectedDefectCartSet);
+            updateContent();
+        }
+    }
 
 
 
