@@ -3,6 +3,7 @@ package org.kesler.cartreg.gui.placecartsets;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,6 +16,7 @@ import org.controlsfx.dialog.Dialogs;
 import org.kesler.cartreg.domain.*;
 import org.kesler.cartreg.gui.AbsractListController;
 import org.kesler.cartreg.gui.cartset.CartSetController;
+import org.kesler.cartreg.gui.cartsetreestr.CartSetComparator;
 import org.kesler.cartreg.service.CartSetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +48,9 @@ public class PlaceCartSetsController extends AbsractListController<CartSet> {
     private final ObservableList<CartSet> observableCartSets = FXCollections.observableArrayList();
 
     @FXML protected void initialize() {
-        cartSetsTableView.setItems(observableCartSets);
+        SortedList<CartSet> sortedCartSets = new SortedList<CartSet>(observableCartSets);
+        sortedCartSets.setComparator(new CartSetComparator());
+        cartSetsTableView.setItems(sortedCartSets);
     }
 
     public void show(Window owner, Place place) {
@@ -211,6 +215,7 @@ public class PlaceCartSetsController extends AbsractListController<CartSet> {
                     if (!fit) cartSetIterator.remove();
                 }
             }
+
 
             return cartSets;
         }

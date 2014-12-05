@@ -19,7 +19,6 @@ public class CartSetServiceDAOImpl implements CartSetService {
     @Autowired
     private CartSetDAO cartSetDAO;
 
-    @Transactional(readOnly = true)
     @Override
     public Collection<CartSet> getAllCartSets() {
         return cartSetDAO.getAllCartSets();
@@ -31,24 +30,35 @@ public class CartSetServiceDAOImpl implements CartSetService {
         return cartSetDAO.getCartSetsByPlace(place);
     }
 
-    @Transactional
     @Override
     public void addCartSet(CartSet cartSet) {
+        Collection<CartSet> cartSets = cartSetDAO.getCartSetsByPlace(cartSet.getPlace());
+        for (CartSet cs:cartSets) {
+            if (cs.mergeCardSet(cartSet)) {
+                updateCartSet(cs);
+                return;
+            }
+        }
         cartSetDAO.addCartSet(cartSet);
     }
 
-    @Transactional
     @Override
     public void updateCartSet(CartSet cartSet) {
+        Collection<CartSet> cartSets = cartSetDAO.getCartSetsByPlace(cartSet.getPlace());
+        for (CartSet cs:cartSets) {
+            if (!cs.equals(cartSet) && cs.mergeCardSet(cartSet)) {
+                cartSetDAO.updateCartSet(cs);
+                cartSetDAO.removeCartSet(cartSet);
+                return;
+            }
+        }
+
         if (cartSet.getQuantity()==0) {
             cartSetDAO.removeCartSet(cartSet);
-        } else {
-            cartSetDAO.updateCartSet(cartSet);
         }
 
     }
 
-    @Transactional
     @Override
     public void removeCartSet(CartSet cartSet) {
         cartSetDAO.removeCartSet(cartSet);

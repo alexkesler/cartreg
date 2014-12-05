@@ -227,7 +227,7 @@ public class FillingController extends AbstractController {
     }
 
 
-    /// Обработчики для панели Пустые
+    /// Обработчики для панели Пустые картриджи
 
     private void addEmptyCartSet() {
         CartStatus[] statuses = {CartStatus.EMPTY};
