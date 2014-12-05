@@ -120,22 +120,12 @@ public class FillingController extends AbstractController {
 
     @FXML
     protected void handleAddEmptyCartSetButtonAction(ActionEvent ev) {
-
-    }
-
-    @FXML
-    protected void handleEditEmptyCartSetButtonAction(ActionEvent ev) {
-
-    }
-
-    @FXML
-    protected void handleEmptyCartSetsTableViewMouseClick(MouseEvent ev) {
-
+        addEmptyCartSet();
     }
 
     @FXML
     protected void handleRemoveEmptyCartSetButtonAction(ActionEvent ev) {
-
+        removeEmptyCartSet();
     }
 
     @FXML
@@ -236,8 +226,30 @@ public class FillingController extends AbstractController {
         observableEmptyCartSets.addAll(cartSets);
     }
 
-    private void addEmptyCartSet() {
 
+    /// Обработчики для панели Пустые
+
+    private void addEmptyCartSet() {
+        CartStatus[] statuses = {CartStatus.EMPTY};
+        placeCartSetsController.showAndWaitSelect(stage,direct,statuses);
+        if (placeCartSetsController.getResult()==Result.OK) {
+            CartSet cartSet = placeCartSetsController.getSelectedItem();
+            if (!observableEmptyCartSets.contains(cartSet))
+                observableEmptyCartSets.addAll(cartSet);
+        }
+    }
+
+    private void removeEmptyCartSet() {
+        CartSet selectedCartSet = emptyCartSetsTableView.getSelectionModel().getSelectedItem();
+        if (selectedCartSet!=null) {
+            observableEmptyCartSets.removeAll(selectedCartSet);
+            for (Map.Entry<CartSet,CartSet> entry:filledToEmptyCartSets.entrySet()) {
+                if (entry.getValue().equals(selectedCartSet)) {
+                    observableFilledCartSets.removeAll(entry.getKey());
+                    filledToEmptyCartSets.remove(entry.getKey());
+                }
+            }
+        }
     }
 
     private void fillCartSet() {
@@ -286,6 +298,19 @@ public class FillingController extends AbstractController {
 
         }
     }
+
+    // Обработчики для панели Заправленые
+
+
+
+
+    // Обработчики для панели Неисправные
+
+
+
+
+    // Общие обработчики
+
 
     private void saveCartSets() {
 

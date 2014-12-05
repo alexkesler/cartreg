@@ -10,13 +10,13 @@
 
 <VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="361.0" prefWidth="518.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.kesler.cartreg.gui.filling.FillingController">
    <children>
-      <Accordion VBox.vgrow="ALWAYS">
+      <Accordion VBox.vgrow="ALWAYS" expandedPane="$mainPane">
         <panes>
-            <TitledPane fx:id="mainPane" maxHeight="1000.0" maxWidth="1000.0" prefHeight="175.0" prefWidth="476.0" text="На заправку">
+            <TitledPane fx:id="mainPane" maxHeight="1000.0" maxWidth="1000.0" prefHeight="175.0" prefWidth="476.0" text="Пустые картриджи">
                <content>
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
-                        <TableView fx:id="emptyCartSetsTableView" maxHeight="1000.0" maxWidth="1000.0" onMouseClicked="#handleEmptyCartSetsTableViewMouseClick" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                        <TableView fx:id="emptyCartSetsTableView" maxHeight="1000.0" maxWidth="1000.0" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                             <placeholder>
                                 <javafx.scene.text.Text text="Нет данных" />
                             </placeholder>
@@ -56,15 +56,6 @@
                                     <ImageView>
                                        <image>
                                           <Image url="@../images/add.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
-                              </Button>
-                              <Button mnemonicParsing="false" onAction="#handleEditEmptyCartSetButtonAction">
-                                 <graphic>
-                                    <ImageView>
-                                       <image>
-                                          <Image url="@../images/pencil.png" />
                                        </image>
                                     </ImageView>
                                  </graphic>

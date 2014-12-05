@@ -92,7 +92,7 @@ public class PlaceCartSetsController extends AbsractListController<CartSet> {
     @Override
     protected void updateContent() {
         if (place==null) {
-            placeLabel.setText("Не опеределено");
+            placeLabel.setText("Не определено");
             return;
         }
         placeLabel.setText(place.getCommonName());

@@ -20,7 +20,7 @@
             </Label>
          </children>
       </AnchorPane>
-      <Accordion VBox.vgrow="ALWAYS">
+      <Accordion VBox.vgrow="ALWAYS" expandedPane="$mainPane">
         <panes>
           <TitledPane fx:id="mainPane" animated="true" text="Принято">
                <content>
