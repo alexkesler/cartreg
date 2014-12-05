@@ -8,10 +8,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 
-<VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="361.0" prefWidth="518.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="org.kesler.cartreg.gui.filling.FillingController">
+<VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="361.0" prefWidth="518.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.kesler.cartreg.gui.filling.FillingController">
    <children>
-      <Accordion VBox.vgrow="ALWAYS" expandedPane="$mainPane">
+      <Accordion VBox.vgrow="ALWAYS">
         <panes>
             <TitledPane fx:id="mainPane" maxHeight="1000.0" maxWidth="1000.0" prefHeight="175.0" prefWidth="476.0" text="На заправку">
                <content>
@@ -44,8 +43,8 @@
                            <contextMenu>
                               <ContextMenu>
                                 <items>
-                                  <MenuItem mnemonicParsing="false" text="Заправить" onAction="#handleFillMenuItemAction"/>
-                                  <MenuItem mnemonicParsing="false" text="Дефектовать" onAction="#handleDefectMenuItemAction"/>
+                                  <MenuItem mnemonicParsing="false" onAction="#handleFillMenuItemAction" text="Заправить" />
+                                  <MenuItem mnemonicParsing="false" onAction="#handleDefectMenuItemAction" text="Дефектовать" />
                                 </items>
                               </ContextMenu>
                            </contextMenu>
@@ -207,6 +206,7 @@
          <items>
             <Button defaultButton="true" mnemonicParsing="false" onAction="#handleOkButtonAction" text="Провести" />
             <Button mnemonicParsing="false" onAction="#handleCancelButtonAction" text="Отмена" />
+            <ProgressIndicator fx:id="updateProgressIndicator" prefHeight="16.0" prefWidth="27.0" visible="false" />
          </items>
       </ToolBar>
    </children>
