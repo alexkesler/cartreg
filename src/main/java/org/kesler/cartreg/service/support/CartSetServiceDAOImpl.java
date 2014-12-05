@@ -40,7 +40,12 @@ public class CartSetServiceDAOImpl implements CartSetService {
     @Transactional
     @Override
     public void updateCartSet(CartSet cartSet) {
-        cartSetDAO.updateCartSet(cartSet);
+        if (cartSet.getQuantity()==0) {
+            cartSetDAO.removeCartSet(cartSet);
+        } else {
+            cartSetDAO.updateCartSet(cartSet);
+        }
+
     }
 
     @Transactional

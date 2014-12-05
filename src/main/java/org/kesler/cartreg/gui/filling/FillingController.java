@@ -217,7 +217,7 @@ public class FillingController extends AbstractController {
             Dialogs.create()
                     .owner(stage)
                     .title("Оповещение")
-                    .message("Перемещено")
+                    .message("Заправлено")
                     .showInformation();
             stage.hide();
         }
