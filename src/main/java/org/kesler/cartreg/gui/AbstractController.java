@@ -49,6 +49,25 @@ public abstract class AbstractController {
 
     }
 
+    public void showFullScreen(Window owner) {
+        log.info("Show view");
+        initStage(owner);
+        stage.setMaximized(true);
+        updateContent();
+        result=Result.NONE;
+        stage.show();
+    }
+
+    public void showFullScreen(Window owner, String title) {
+        log.info("Show view with title: " + title);
+        initStage(owner,title);
+        stage.setMaximized(true);
+        result = Result.NONE;
+        updateContent();
+        stage.showAndWait();
+
+    }
+
 
     public void showAndWait(Window owner) {
         log.info("Show view and wait");

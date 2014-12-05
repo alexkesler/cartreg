@@ -41,7 +41,7 @@ public class CartSetChangesController extends AbstractController {
 
     @Override
     public void show(Window owner) {
-        super.show(owner, "Перемещения");
+        super.showFullScreen(owner, "Перемещения");
     }
 
 
