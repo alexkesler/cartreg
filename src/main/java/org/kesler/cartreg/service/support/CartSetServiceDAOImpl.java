@@ -29,7 +29,6 @@ public class CartSetServiceDAOImpl implements CartSetService {
         return cartSetDAO.getAllCartSets();
     }
 
-    @Transactional(readOnly = true)
     @Override
     public Collection<CartSet> getCartSetsByPlace(Place place) {
         log.info("Receiving all CartSets by Place: " + place.getCommonName() + " ..");

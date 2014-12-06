@@ -17,6 +17,7 @@ import org.kesler.cartreg.gui.exchange.ExchangeController;
 import org.kesler.cartreg.gui.placecartsets.PlaceCartSetsController;
 import org.kesler.cartreg.gui.util.QuantityController;
 
+import org.kesler.cartreg.gui.withdraw.WithdrawController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -121,6 +122,11 @@ public class CartRegAppFactory {
     @Bean
     public CartSetReestrController cartSetReestrController() {
         return loadController("/fxml/CartSetReestr.fxml");
+    }
+
+    @Bean
+    public WithdrawController withdrawController() {
+        return loadController("/fxml/Withdraw.fxml");
     }
 
     /**

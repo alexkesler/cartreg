@@ -18,6 +18,7 @@ import org.kesler.cartreg.gui.place.PlaceListController;
 import org.kesler.cartreg.gui.carttype.CartTypeListController;
 import org.kesler.cartreg.gui.exchange.ExchangeController;
 import org.kesler.cartreg.gui.placecartsets.PlaceCartSetsController;
+import org.kesler.cartreg.gui.withdraw.WithdrawController;
 import org.kesler.cartreg.service.CartSetService;
 import org.kesler.cartreg.service.PlaceService;
 import org.slf4j.Logger;
@@ -60,6 +61,9 @@ public class MainController extends AbstractController{
 
     @Autowired
     private FillingController fillingController;
+
+    @Autowired
+    private WithdrawController withdrawController;
 
     @Autowired
     private CartSetChangesController cartSetChangesController;
@@ -178,7 +182,8 @@ public class MainController extends AbstractController{
     }
 
     private void showWithdrawDialog() {
-
+        log.info("Show WithdrawDialog");
+        withdrawController.show(stage);
     }
 
     private void showPlaceListDialog() {
