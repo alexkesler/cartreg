@@ -221,13 +221,6 @@ public class FillingController extends AbstractController {
                 .showConfirm();
         if (response== Dialog.ACTION_YES) {
             saveCartSets();
-            clearLists();
-            Dialogs.create()
-                    .owner(stage)
-                    .title("Оповещение")
-                    .message("Заправлено")
-                    .showInformation();
-            stage.hide();
         }
 
     }
@@ -388,86 +381,16 @@ public class FillingController extends AbstractController {
 
     private void saveCartSets() {
 
-        // Список уникальных исходных наборов
-//        Set<CartSet> sourceCartSets = new HashSet<CartSet>();
 
-        // сохраняем поступившие наборы
-        for (CartSet filledCartSet:observableFilledCartSets) {
-
-            log.info("Adding filled CartSet: "
-                    + filledCartSet.getModel()
-                    + " (" + filledCartSet.getStatusDesc() + ") - "
-                    + filledCartSet.getQuantity());
-            AddCartSetTask addCartSetTask = new AddCartSetTask(filledCartSet);
-            BooleanBinding runningBinding = addCartSetTask.stateProperty().isEqualTo(Task.State.RUNNING);
-            updateProgressIndicator.visibleProperty().bind(runningBinding);
-
-            new Thread(addCartSetTask).start();
-
-            CartSet sourceCartSet = filledToEmptyCartSets.get(filledCartSet);
-
-//            sourceCartSets.add(sourceCartSet);
-
-            saveCartSetChange(sourceCartSet, filledCartSet, CartSetChange.Type.FILL);
-        }
-        // сохраняем отправленные наборы
-        for (CartSet defectCartSet:observableDefectCartSet) {
-            log.info("Adding defect CartSet: "
-                    + defectCartSet.getModel()
-                    + " (" + defectCartSet.getStatusDesc() + ") - "
-                    + defectCartSet.getQuantity());
-            AddCartSetTask addCartSetTask = new AddCartSetTask(defectCartSet);
-            BooleanBinding runningBinding = addCartSetTask.stateProperty().isEqualTo(Task.State.RUNNING);
-            updateProgressIndicator.visibleProperty().bind(runningBinding);
-
-            new Thread(addCartSetTask).start();
-
-            CartSet sourceCartSet = defectToEmptyCartSet.get(defectCartSet);
-
-//            sourceCartSets.add(sourceCartSet);
-
-            saveCartSetChange(sourceCartSet, defectCartSet, CartSetChange.Type.DEFECT);
-        }
-
-
-        // Сохраняем исходные наборы
-
-        for (CartSet sourceCartSet: observableEmptyCartSets) {
-            log.info("Updating source CartSet: "
-                    + sourceCartSet.getModel()
-                    + " (" + sourceCartSet.getStatusDesc() + ") - "
-                    + sourceCartSet.getQuantity());
-
-
-            UpdateCartSetTask updateCartSetTask = new UpdateCartSetTask(sourceCartSet);
-            BooleanBinding runningBinding = updateCartSetTask.stateProperty().isEqualTo(Task.State.RUNNING);
-            updateProgressIndicator.visibleProperty().bind(runningBinding);
-
-            new Thread(updateCartSetTask).start();
-
-        }
-
-    }
-
-    private void saveCartSetChange(CartSet fromCartSet, CartSet toCartSet, CartSetChange.Type type) {
-        CartSetChange cartSetChange = new CartSetChange();
-        cartSetChange.setType(type);
-        cartSetChange.setFromPlace(fromCartSet.getPlace());
-        cartSetChange.setToPlace(toCartSet.getPlace());
-        cartSetChange.setCartType(fromCartSet.getType());
-        cartSetChange.setFromStatus(fromCartSet.getStatus());
-        cartSetChange.setToStatus(toCartSet.getStatus());
-        cartSetChange.setQuantity(toCartSet.getQuantity());
-        cartSetChange.setChangeDate(new Date());
-
-
-        log.info("Saving change... ");
-        SaveChangeTask saveChangeTask = new SaveChangeTask(cartSetChange);
-
-        BooleanBinding runningBinding = saveChangeTask.stateProperty().isEqualTo(Task.State.RUNNING);
+        log.info("Saving filling data.. ");
+        SavingTask savingTask = new SavingTask();
+        BooleanBinding runningBinding = savingTask.stateProperty().isEqualTo(Task.State.RUNNING);
         updateProgressIndicator.visibleProperty().bind(runningBinding);
 
-        new Thread(saveChangeTask).start();
+        new Thread(savingTask).start();
+
+
+
     }
 
 
@@ -483,18 +406,52 @@ public class FillingController extends AbstractController {
 
     // Классы для обновления данных в отдельном потоке
 
-    class AddCartSetTask extends Task<Void> {
-        private final Logger log = LoggerFactory.getLogger(this.getClass());
-        private final CartSet cartSet;
 
-        AddCartSetTask(CartSet cartSet) {
-            this.cartSet = cartSet;
-        }
+    class SavingTask extends Task<Void> {
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
         @Override
         protected Void call() throws Exception {
-            log.debug("Adding CartSet...");
 
-            cartSetService.addCartSet(cartSet);
+            // сохраняем поступившие наборы
+            for (CartSet filledCartSet:observableFilledCartSets) {
+
+                log.info("Adding filled CartSet: "
+                        + filledCartSet.getModel()
+                        + " (" + filledCartSet.getStatusDesc() + ") - "
+                        + filledCartSet.getQuantity());
+                cartSetService.addCartSet(filledCartSet);
+                log.info("Adding filled CartSet complete");
+
+                CartSet sourceCartSet = filledToEmptyCartSets.get(filledCartSet);
+                saveCartSetChange(sourceCartSet, filledCartSet, CartSetChange.Type.FILL);
+            }
+            // сохраняем отправленные наборы
+            for (CartSet defectCartSet:observableDefectCartSet) {
+                log.info("Adding defect CartSet: "
+                        + defectCartSet.getModel()
+                        + " (" + defectCartSet.getStatusDesc() + ") - "
+                        + defectCartSet.getQuantity());
+                cartSetService.addCartSet(defectCartSet);
+                log.info("Adding defect CartSet complete");
+
+                CartSet sourceCartSet = defectToEmptyCartSet.get(defectCartSet);
+                saveCartSetChange(sourceCartSet, defectCartSet, CartSetChange.Type.DEFECT);
+            }
+
+
+            // Сохраняем исходные наборы
+
+            for (CartSet sourceCartSet: observableEmptyCartSets) {
+                log.info("Updating source CartSet: "
+                        + sourceCartSet.getModel()
+                        + " (" + sourceCartSet.getStatusDesc() + ") - "
+                        + sourceCartSet.getQuantity());
+                cartSetService.updateCartSet(sourceCartSet);
+                log.info("Updating source CartSet complete");
+
+            }
+
+
 
             return null;
         }
@@ -502,93 +459,51 @@ public class FillingController extends AbstractController {
         @Override
         protected void succeeded() {
             super.succeeded();
-            log.info("Adding CartSet complete");
-            updateContent();
+            log.info("Saving filling data complete");
+            clearLists();
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Оповещение")
+                    .message("Заправка/дефектовка сохранена")
+                    .showInformation();
+            hideStage();
+
         }
 
         @Override
         protected void failed() {
             super.failed();
             Throwable exception = getException();
-            log.error("Error adding CartSet: " + exception, exception);
+            log.error("Error saving filling data: " + exception, exception);
             Dialogs.create()
                     .owner(stage)
                     .title("Ошибка")
-                    .message("Ошибка при добавлении набора картриджей: " + exception)
+                    .message("Ошибка при сохранении данных: " + exception)
                     .showException(exception);
         }
-    }
-
-    class UpdateCartSetTask extends Task<Void> {
-        private final Logger log = LoggerFactory.getLogger(this.getClass());
-        private final CartSet cartSet;
-
-        UpdateCartSetTask(CartSet cartSet) {
-            this.cartSet = cartSet;
-        }
-        @Override
-        protected Void call() throws Exception {
-            log.debug("Updating CartSet...");
-
-            cartSetService.updateCartSet(cartSet);
-
-            return null;
-        }
-
-        @Override
-        protected void succeeded() {
-            super.succeeded();
-            log.info("Updating CartSet complete");
-            updateContent();
-        }
-
-        @Override
-        protected void failed() {
-            super.failed();
-            Throwable exception = getException();
-            log.error("Error updating CartSet: " + exception, exception);
-            Dialogs.create()
-                    .owner(stage)
-                    .title("Ошибка")
-                    .message("Ошибка при обновлении набора картриджей: " + exception)
-                    .showException(exception);
-        }
-    }
 
 
-    class SaveChangeTask extends Task<Void> {
-        private final Logger log = LoggerFactory.getLogger(this.getClass());
-        private CartSetChange cartSetChange;
+        private void saveCartSetChange(CartSet fromCartSet, CartSet toCartSet, CartSetChange.Type type) {
+            CartSetChange cartSetChange = new CartSetChange();
+            cartSetChange.setType(type);
+            cartSetChange.setFromPlace(fromCartSet.getPlace());
+            cartSetChange.setToPlace(toCartSet.getPlace());
+            cartSetChange.setCartType(fromCartSet.getType());
+            cartSetChange.setFromStatus(fromCartSet.getStatus());
+            cartSetChange.setToStatus(toCartSet.getStatus());
+            cartSetChange.setQuantity(toCartSet.getQuantity());
+            cartSetChange.setChangeDate(new Date());
 
-        SaveChangeTask(CartSetChange cartSetChange) {
-            this.cartSetChange = cartSetChange;
-        }
 
-
-        @Override
-        protected Void call() throws Exception {
-            log.debug("Saving change...");
+            log.info("Saving change... ");
             cartSetChangeService.addChange(cartSetChange);
-            return null;
+            log.info("Saving change complete");
         }
 
-        @Override
-        protected void succeeded() {
-            super.succeeded();
-            log.info("Saving change complete.");
-        }
 
-        @Override
-        protected void failed() {
-            super.failed();
-            Throwable exception = getException();
-            log.error("Error saving change: " + exception, exception);
-            Dialogs.create()
-                    .owner(stage)
-                    .title("Ошибка")
-                    .message("Ошибка при сохранении перемещения: " + exception)
-                    .showException(exception);
-        }
+
     }
+
+
 
 }

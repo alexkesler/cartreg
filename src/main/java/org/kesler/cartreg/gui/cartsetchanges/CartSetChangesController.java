@@ -3,6 +3,7 @@ package org.kesler.cartreg.gui.cartsetchanges;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.ProgressIndicator;
@@ -37,7 +38,9 @@ public class CartSetChangesController extends AbstractController {
 
     @FXML
     protected void initialize() {
-        cartSetChangesTableView.setItems(observableCartSetChanges);
+        SortedList<CartSetChange> sortedChanges = new SortedList<CartSetChange>(observableCartSetChanges);
+        sortedChanges.setComparator(new CartSetChangeComparator());
+        cartSetChangesTableView.setItems(sortedChanges);
     }
 
     @Override
