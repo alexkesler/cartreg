@@ -32,7 +32,7 @@ import java.util.*;
 @Component
 public class PlaceListController extends AbsractListController<Place> {
 
-    protected static Logger log = LoggerFactory.getLogger(PlaceListController.class);
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private PlaceService placeService;
@@ -109,6 +109,7 @@ public class PlaceListController extends AbsractListController<Place> {
 
     @Override
     protected void handleOk() {
+        log.info("Handle OK action");
         selectedItem = placeListView.getSelectionModel().getSelectedItem();
 
         if (select && selectedItem == null) {
@@ -119,7 +120,7 @@ public class PlaceListController extends AbsractListController<Place> {
                     .showWarning();
         } else {
             result = Result.OK;
-            stage.hide();
+            hideStage();
         }
     }
 
@@ -152,11 +153,10 @@ public class PlaceListController extends AbsractListController<Place> {
     }
 
 
-
     // Методы управления списком сотрудников
 
     private void addPlace() {
-        log.info("Opening add Place dialog");
+        log.info("Handle add place");
 
         Place newPlace = new Place();
         if (placeTypes!=null) {
@@ -166,7 +166,7 @@ public class PlaceListController extends AbsractListController<Place> {
         }
         placeController.showAndWait(stage, newPlace, placeTypes);
         if (placeController.getResult() == AbstractController.Result.OK) {
-            log.info("Saving Place: " + newPlace.getCommonName());
+            log.info("Adding new Place: " + newPlace.getCommonName());
             AddPlaceTask addPlaceTask = new AddPlaceTask(newPlace);
 
             BooleanBinding runningBinding = addPlaceTask.stateProperty().isEqualTo(Task.State.RUNNING);
@@ -178,6 +178,7 @@ public class PlaceListController extends AbsractListController<Place> {
     }
 
     private void editPlace() {
+        log.info("Handle edit place");
         Place selectedPlace = placeListView.getSelectionModel().getSelectedItem();
         if (selectedPlace==null) {
             Dialogs.create()
@@ -203,6 +204,7 @@ public class PlaceListController extends AbsractListController<Place> {
 
 
     private void removePlace() {
+        log.info("Handle remove place");
         Place selectedPlace = placeListView.getSelectionModel().getSelectedItem();
         if (selectedPlace ==null) {
             Dialogs.create()

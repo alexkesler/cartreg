@@ -42,6 +42,9 @@
          </VBox.margin>
       </GridPane>
       <TableView fx:id="cartSetsTableView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+          <placeholder>
+              <javafx.scene.text.Text text="Нет данных" />
+          </placeholder>
         <columns>
           <TableColumn editable="false" maxWidth="500.0" minWidth="100.0" prefWidth="333.0" sortable="false" text="Модель">
               <cellValueFactory>

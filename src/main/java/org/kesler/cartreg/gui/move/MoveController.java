@@ -37,6 +37,7 @@ import java.util.Map;
  */
 @Component
 public class MoveController extends AbstractController {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @FXML protected Label sourcePlaceLabel;
     @FXML protected Label destinationPlaceLabel;
@@ -134,13 +135,6 @@ public class MoveController extends AbstractController {
                 .showConfirm();
         if (response== Dialog.ACTION_YES) {
             saveCartSets();
-            clearLists();
-            Dialogs.create()
-                    .owner(stage)
-                    .title("Информация")
-                    .message("Перемещено")
-                    .showInformation();
-            stage.hide();
         }
     }
 
@@ -152,22 +146,27 @@ public class MoveController extends AbstractController {
 
 
     private void selectSourcePlace() {
+        log.info("Handle select source place");
         placeListController.showAndWaitSelect(stage);
         if (placeListController.getResult()==Result.OK) {
             sourcePlace = placeListController.getSelectedItem();
+            log.info("Source place set:" + sourcePlace.getCommonName());
             updateContent();
         }
     }
 
     private void selectDestinationPlace() {
+        log.info("Handle select destination place");
         placeListController.showAndWaitSelect(stage);
         if (placeListController.getResult()==Result.OK) {
             destinationPlace = placeListController.getSelectedItem();
+            log.info("Destination place set:" + sourcePlace.getCommonName());
             updateContent();
         }
     }
 
     private void addCartSet() {
+        log.info("Handle add CartSet");
         if (!checkSource()) return;
         placeCartSetsController.showAndWaitSelect(stage, sourcePlace);
         if (placeCartSetsController.getResult()==Result.OK) {
@@ -189,6 +188,7 @@ public class MoveController extends AbstractController {
     }
 
     private void editCartSet() {
+        log.info("Handle edit CartSet");
         CartSet selectedMoveCartSet = cartSetsTableView.getSelectionModel().getSelectedItem();
         if (selectedMoveCartSet!=null) {
             CartSet sourceCartSet = toFromCartSets.get(selectedMoveCartSet);
@@ -206,6 +206,7 @@ public class MoveController extends AbstractController {
     }
 
     private void removeCartSet() {
+        log.info("Handle remove CartSet");
         CartSet selectedMoveCartSet = cartSetsTableView.getSelectionModel().getSelectedItem();
         if (selectedMoveCartSet!=null) {
             CartSet sourceCartSet = toFromCartSets.get(selectedMoveCartSet);
@@ -218,51 +219,17 @@ public class MoveController extends AbstractController {
     }
 
     private void saveCartSets() {
-        // сохраняем поступившие наборы
-        for (CartSet moveCartSet:observableCartSets) {
 
-            log.info("Adding move CartSet...");
-            AddCartSetTask addCartSetTask = new AddCartSetTask(moveCartSet);
-            BooleanBinding runningBinding = addCartSetTask.stateProperty().isEqualTo(Task.State.RUNNING);
-            updateProgressIndicator.visibleProperty().bind(runningBinding);
-
-            new Thread(addCartSetTask).start();
-
-
-            CartSet sourceCartSet = toFromCartSets.get(moveCartSet);
-
-            log.info("Updating source CartSet...");
-            UpdateCartSetTask updateCartSetTask = new UpdateCartSetTask(sourceCartSet);
-            runningBinding = updateCartSetTask.stateProperty().isEqualTo(Task.State.RUNNING);
-            updateProgressIndicator.visibleProperty().bind(runningBinding);
-
-            new Thread(updateCartSetTask).start();
-
-            saveCartSetChange(sourceCartSet,moveCartSet);
-        }
-
-    }
-
-    private void saveCartSetChange(CartSet fromCartSet, CartSet toCartSet) {
-        CartSetChange cartSetChange = new CartSetChange();
-        cartSetChange.setType(CartSetChange.Type.MOVE);
-        cartSetChange.setFromPlace(fromCartSet.getPlace());
-        cartSetChange.setToPlace(toCartSet.getPlace());
-        cartSetChange.setCartType(fromCartSet.getType());
-        cartSetChange.setFromStatus(fromCartSet.getStatus());
-        cartSetChange.setToStatus(toCartSet.getStatus());
-        cartSetChange.setQuantity(toCartSet.getQuantity());
-        cartSetChange.setChangeDate(new Date());
-
-
-        log.info("Saving change... ");
-        SaveChangeTask saveChangeTask = new SaveChangeTask(cartSetChange);
-
-        BooleanBinding runningBinding = saveChangeTask.stateProperty().isEqualTo(Task.State.RUNNING);
+        log.info("Saving move data...");
+        SavingTask savingTask = new SavingTask();
+        BooleanBinding runningBinding = savingTask.stateProperty().isEqualTo(Task.State.RUNNING);
         updateProgressIndicator.visibleProperty().bind(runningBinding);
 
-        new Thread(saveChangeTask).start();
+        new Thread(savingTask).start();
+
+
     }
+
 
     private void clearLists() {
         observableCartSets.clear();
@@ -273,6 +240,7 @@ public class MoveController extends AbstractController {
 
     private boolean checkSource() {
         if (sourcePlace==null) {
+            log.info("Source not set - show select dialog");
             Dialogs.create()
                     .owner(stage)
                     .title("Внимание")
@@ -287,12 +255,14 @@ public class MoveController extends AbstractController {
             }
         }
 
+        log.info("Source is ok");
         return true;
     }
 
 
     private boolean checkDestination() {
         if (destinationPlace==null) {
+            log.info("Destination not set - show select dialog");
             Dialogs.create()
                     .owner(stage)
                     .title("Внимание")
@@ -306,7 +276,7 @@ public class MoveController extends AbstractController {
                 return false;
             }
         }
-
+        log.info("Destination is ok");
         return true;
     }
 
@@ -314,18 +284,27 @@ public class MoveController extends AbstractController {
 
     // Классы для сохранения данных в отдельном потоке
 
-    class AddCartSetTask extends Task<Void> {
+    class SavingTask extends Task<Void> {
         private final Logger log = LoggerFactory.getLogger(this.getClass());
-        private final CartSet cartSet;
-
-        AddCartSetTask(CartSet cartSet) {
-            this.cartSet = cartSet;
-        }
         @Override
         protected Void call() throws Exception {
-            log.debug("Adding CartSet...");
 
-            cartSetService.addCartSet(cartSet);
+            // сохраняем поступившие наборы
+            for (CartSet moveCartSet:observableCartSets) {
+
+                log.info("Adding move CartSet...");
+                cartSetService.addCartSet(moveCartSet);
+                log.info("Adding move CartSet complete");
+
+                CartSet sourceCartSet = toFromCartSets.get(moveCartSet);
+
+                log.info("Updating source CartSet...");
+                cartSetService.updateCartSet(sourceCartSet);
+                log.info("Updating source CartSet complete");
+
+                saveCartSetChange(sourceCartSet,moveCartSet);
+            }
+
 
             return null;
         }
@@ -333,8 +312,15 @@ public class MoveController extends AbstractController {
         @Override
         protected void succeeded() {
             super.succeeded();
-            log.info("Adding CartSet complete");
-            updateContent();
+            log.info("Saving move data complete ");
+            clearLists();
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Информация")
+                    .message("Перемещение сохранено")
+                    .showInformation();
+            hideStage();
+
         }
 
         @Override
@@ -348,77 +334,28 @@ public class MoveController extends AbstractController {
                     .message("Ошибка при добавлении набора картриджей: " + exception)
                     .showException(exception);
         }
-    }
-
-    class UpdateCartSetTask extends Task<Void> {
-        private final Logger log = LoggerFactory.getLogger(this.getClass());
-        private final CartSet cartSet;
-
-        UpdateCartSetTask(CartSet cartSet) {
-            this.cartSet = cartSet;
-        }
-        @Override
-        protected Void call() throws Exception {
-            log.debug("Updating CartSet...");
-
-            cartSetService.updateCartSet(cartSet);
-
-            return null;
-        }
-
-        @Override
-        protected void succeeded() {
-            super.succeeded();
-            log.info("Updating CartSet complete");
-            updateContent();
-        }
-
-        @Override
-        protected void failed() {
-            super.failed();
-            Throwable exception = getException();
-            log.error("Error updating CartSet: " + exception, exception);
-            Dialogs.create()
-                    .owner(stage)
-                    .title("Ошибка")
-                    .message("Ошибка при обновлении набора картриджей: " + exception)
-                    .showException(exception);
-        }
-    }
-
-    class SaveChangeTask extends Task<Void> {
-        private final Logger log = LoggerFactory.getLogger(this.getClass());
-        private CartSetChange cartSetChange;
-
-        SaveChangeTask(CartSetChange cartSetChange) {
-            this.cartSetChange = cartSetChange;
-        }
 
 
-        @Override
-        protected Void call() throws Exception {
-            log.debug("Saving change...");
+        private void saveCartSetChange(CartSet fromCartSet, CartSet toCartSet) {
+            CartSetChange cartSetChange = new CartSetChange();
+            cartSetChange.setType(CartSetChange.Type.MOVE);
+            cartSetChange.setFromPlace(fromCartSet.getPlace());
+            cartSetChange.setToPlace(toCartSet.getPlace());
+            cartSetChange.setCartType(fromCartSet.getType());
+            cartSetChange.setFromStatus(fromCartSet.getStatus());
+            cartSetChange.setToStatus(toCartSet.getStatus());
+            cartSetChange.setQuantity(toCartSet.getQuantity());
+            cartSetChange.setChangeDate(new Date());
+
+
+            log.info("Saving change... ");
             cartSetChangeService.addChange(cartSetChange);
-            return null;
+            log.info("Saving change complete");
         }
 
-        @Override
-        protected void succeeded() {
-            super.succeeded();
-            log.info("Saving change complete.");
-        }
-
-        @Override
-        protected void failed() {
-            super.failed();
-            Throwable exception = getException();
-            log.error("Error saving change: " + exception, exception);
-            Dialogs.create()
-                    .owner(stage)
-                    .title("Ошибка")
-                    .message("Ошибка при сохранении перемещения: " + exception)
-                    .showException(exception);
-        }
     }
+
+
+
 
 }

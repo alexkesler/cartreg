@@ -50,7 +50,7 @@ public abstract class AbstractController {
     }
 
     public void showFullScreen(Window owner) {
-        log.info("Show view");
+        log.info("Show view maximized");
         initStage(owner);
         stage.setMaximized(true);
         updateContent();
@@ -59,12 +59,12 @@ public abstract class AbstractController {
     }
 
     public void showFullScreen(Window owner, String title) {
-        log.info("Show view with title: " + title);
+        log.info("Show view maximized with title: " + title);
         initStage(owner,title);
         stage.setMaximized(true);
         result = Result.NONE;
         updateContent();
-        stage.showAndWait();
+        stage.show();
 
     }
 
@@ -103,22 +103,27 @@ public abstract class AbstractController {
     }
 
     protected void handleOk() {
-        log.info("Ok button pressed - saving and close");
+        log.info("Handle Ok action");
         result = Result.OK;
         updateResult();
-        stage.hide();
+        hideStage();
     }
 
     protected void handleCancel() {
-        log.info("Cancel button pressed - close without saving");
+        log.info("Handle Cancel action");
         result = Result.CANCEL;
-        stage.hide();
+        hideStage();
 
     }
 
     protected void handleClose() {
-        log.info("Close button pressed - hide view");
+        log.info("Handle Close action");
         result = Result.NONE;
+        hideStage();
+    }
+
+    protected void hideStage() {
+        log.info("Hide stage, result: " + result);
         stage.hide();
     }
 
@@ -140,5 +145,6 @@ public abstract class AbstractController {
         }
         stage.setTitle(title);
     }
+
 
 }
