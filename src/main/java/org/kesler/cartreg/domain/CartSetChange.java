@@ -40,7 +40,7 @@ public class CartSetChange extends AbstractEntity{
     @Column(name = "Quantity")
     private Integer quantity;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date changeDate;
 
     public String getUuid() { return uuid; }
