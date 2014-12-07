@@ -78,12 +78,12 @@ public class WithdrawController extends AbstractController {
 
     @Override
     public void show(Window owner) {
-        checkDirect();
 
         clearLists();
-        addAllDefectFromDirect();
 
         super.show(owner,"Списание картриджей");
+        checkDirect();
+
     }
 
     private void checkDirect() {
@@ -140,8 +140,8 @@ public class WithdrawController extends AbstractController {
 
     @Override
     protected void updateContent() {
-        FXUtils.updateObservableList(observableDefectCartSets);
-        FXUtils.updateObservableList(observableWithdrawCartSets);
+        FXUtils.triggerUpdateTableView(defectCartSetsTableView);
+        FXUtils.triggerUpdateTableView(withdrawCartSetsTableView);
     }
 
 
@@ -166,15 +166,13 @@ public class WithdrawController extends AbstractController {
     }
 
     private void addAllDefectFromDirect() {
-        Collection<CartSet> cartSets = cartSetService.getCartSetsByPlace(direct);
-        Iterator<CartSet> cartSetIterator = cartSets.iterator();
-        while (cartSetIterator.hasNext()) {
-            CartSet cartSet = cartSetIterator.next();
-            if (cartSet.getStatus() != CartStatus.DEFECT) cartSetIterator.remove();
-        }
+        log.info("Getting defect CartSets from direct");
+        GettingDefectFromDirectTask gettingDefectFromDirectTask = new GettingDefectFromDirectTask();
+        BooleanBinding runningBinding = gettingDefectFromDirectTask.stateProperty().isEqualTo(Task.State.RUNNING);
+        updateProgressIndicator.visibleProperty().bind(runningBinding);
 
-        observableDefectCartSets.clear();
-        observableDefectCartSets.addAll(cartSets);
+        new Thread(gettingDefectFromDirectTask).start();
+
     }
 
 
@@ -212,13 +210,13 @@ public class WithdrawController extends AbstractController {
             if (quantityController.getResult()==Result.OK) {
                 withdrawQuantity = quantityController.getQuantity();
                 defectQuantity = defectQuantity-withdrawQuantity;
-                CartSet filledCartSet = selectedDefectCartSet.copyCartSet();
-                filledCartSet.setStatus(CartStatus.WITHDRAW);
-                filledCartSet.setQuantity(withdrawQuantity);
+                CartSet withdrawCartSet = selectedDefectCartSet.copyCartSet();
+                withdrawCartSet.setStatus(CartStatus.WITHDRAW);
+                withdrawCartSet.setQuantity(withdrawQuantity);
                 selectedDefectCartSet.setQuantity(defectQuantity);
 
-                observableWithdrawCartSets.addAll(filledCartSet);
-                withdrawToDefectCartSets.put(filledCartSet, selectedDefectCartSet);
+                observableWithdrawCartSets.addAll(withdrawCartSet);
+                withdrawToDefectCartSets.put(withdrawCartSet, selectedDefectCartSet);
 
                 updateContent();
             }
@@ -286,6 +284,7 @@ public class WithdrawController extends AbstractController {
     // Классы для сохранения данных в отдельном потоке
 
     class CheckDirectTask extends Task<Collection<Place>> {
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
         @Override
         protected Collection<Place> call() throws Exception {
 
@@ -328,6 +327,8 @@ public class WithdrawController extends AbstractController {
                 direct = directs.iterator().next();
             }
             log.info("Selecting direct successful");
+            addAllDefectFromDirect();
+
         }
 
         @Override
@@ -345,9 +346,46 @@ public class WithdrawController extends AbstractController {
 
     }
 
+    class GettingDefectFromDirectTask extends Task<Collection<CartSet>> {
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
+        @Override
+        protected Collection<CartSet> call() throws Exception {
+            Collection<CartSet> cartSets = cartSetService.getCartSetsByPlace(direct);
 
+            return cartSets;
+        }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            Collection<CartSet> cartSets = getValue();
+            Iterator<CartSet> cartSetIterator = cartSets.iterator();
+            while (cartSetIterator.hasNext()) {
+                CartSet cartSet = cartSetIterator.next();
+                if (cartSet.getStatus() != CartStatus.DEFECT) cartSetIterator.remove();
+            }
+
+            observableDefectCartSets.clear();
+            observableDefectCartSets.addAll(cartSets);
+
+        }
+
+        @Override
+        protected void failed() {
+            super.failed();
+            Throwable exception = getException();
+            log.error("Error getting CartSets from Direct: " + exception, exception);
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Ошибка")
+                    .message("Ошибка при чтении данных: " + exception)
+                    .showException(exception);
+        }
+
+    }
 
     class SavingTask extends Task<Void> {
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
         @Override
         protected Void call() throws Exception {
 

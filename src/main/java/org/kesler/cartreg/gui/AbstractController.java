@@ -45,7 +45,7 @@ public abstract class AbstractController {
         initStage(owner,title);
         result = Result.NONE;
         updateContent();
-        stage.showAndWait();
+        stage.show();
 
     }
 

@@ -95,7 +95,8 @@ public class ArrivalController extends AbstractController {
     @Override
     protected void updateContent() {
         placeLabel.setText(place==null?"Не определено":place.getCommonName());
-        FXUtils.updateObservableList(observableCartSets);
+//        FXUtils.updateObservableList(observableCartSets);
+        FXUtils.triggerUpdateTableView(cartSetTableView);
     }
 
     @Override

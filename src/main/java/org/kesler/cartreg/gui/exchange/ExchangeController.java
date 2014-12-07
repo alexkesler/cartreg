@@ -131,6 +131,8 @@ public class ExchangeController extends AbstractController {
     @Override
     protected void updateContent() {
         placeLabel.setText(branch ==null?"Не определено": branch.getCommonName());
+        FXUtils.triggerUpdateTableView(inCartSetsTableView);
+        FXUtils.triggerUpdateTableView(outCartSetsTableView);
     }
 
     private void addInCartSet() {
@@ -170,7 +172,7 @@ public class ExchangeController extends AbstractController {
             if (quantityController.getResult()==Result.OK) {
                 selectedMoveCartSet.setQuantity(quantityController.getQuantity());
                 selectedSourceCartSet.setQuantity(initialSourceQuantity-quantityController.getQuantity());
-                FXUtils.updateObservableList(observableInCartSets);
+                updateContent();
                 log.info("Editing In CartSet: "
                         + selectedMoveCartSet.getModel()
                         + " (" + selectedMoveCartSet.getStatusDesc() + ") - "
@@ -232,7 +234,7 @@ public class ExchangeController extends AbstractController {
             if (quantityController.getResult()==Result.OK) {
                 selectedMoveCartSet.setQuantity(quantityController.getQuantity());
                 selectedSourceCartSet.setQuantity(initialSourceQuantity-quantityController.getQuantity());
-                FXUtils.updateObservableList(observableOutCartSets);
+                updateContent();
                 log.info("Editing Out CartSet: "
                         + selectedMoveCartSet.getModel()
                         + " (" + selectedMoveCartSet.getStatusDesc() + ") - "

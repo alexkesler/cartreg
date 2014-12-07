@@ -1,5 +1,6 @@
 package org.kesler.cartreg.util;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventType;
@@ -61,6 +62,11 @@ public abstract class FXUtils {
 
     }
 
+    public static <S> void triggerUpdateTableView(TableView<S> tableView) {
+        tableView.getColumns().get(0).setVisible(false);
+        tableView.getColumns().get(0).setVisible(true);
+    }
+
     public static <S> void triggerUpdateTableView(TableView<S> tableView, int row) {
         for (TableColumn<S,?> column:tableView.getColumns()) {
             triggerUpdateTableColumn(column, row);
@@ -80,6 +86,7 @@ public abstract class FXUtils {
     }
 
     public static <T> void updateObservableList(final ObservableList<T> observableList) {
+
         List<T> items = new ArrayList<T>(observableList);
         observableList.removeAll(observableList);
         for (T item:items)

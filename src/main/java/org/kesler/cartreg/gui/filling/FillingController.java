@@ -77,23 +77,13 @@ public class FillingController extends AbstractController {
 
     @Override
     public void show(Window owner) {
-        checkDirect();
 
         clearLists();
-        addAllEmptyFromDirect();
 
         super.show(owner,"Заправка картриджей");
+        checkDirect();
     }
 
-    private void checkDirect() {
-        log.info("Checking direct...");
-        /// Проверяем дирекцию в отдельном потоке
-        CheckDirectTask checkDirectTask = new CheckDirectTask();
-        BooleanBinding runningBinding = checkDirectTask.stateProperty().isEqualTo(Task.State.RUNNING);
-        updateProgressIndicator.visibleProperty().bind(runningBinding);
-
-        new Thread(checkDirectTask).start();
-    }
 
     // Управление Панелью "На заправку"
 
@@ -169,9 +159,11 @@ public class FillingController extends AbstractController {
 
     @Override
     protected void updateContent() {
-        FXUtils.updateObservableList(observableEmptyCartSets);
-        FXUtils.updateObservableList(observableFilledCartSets);
-        FXUtils.updateObservableList(observableDefectCartSet);
+
+        FXUtils.triggerUpdateTableView(emptyCartSetsTableView);
+        FXUtils.triggerUpdateTableView(filledCartSetsTableView);
+        FXUtils.triggerUpdateTableView(defectCartSetsTableView);
+
     }
 
 
@@ -201,16 +193,26 @@ public class FillingController extends AbstractController {
 
     }
 
-    private void addAllEmptyFromDirect() {
-        Collection<CartSet> cartSets = cartSetService.getCartSetsByPlace(direct);
-        Iterator<CartSet> cartSetIterator = cartSets.iterator();
-        while (cartSetIterator.hasNext()) {
-            CartSet cartSet = cartSetIterator.next();
-            if (cartSet.getStatus() != CartStatus.EMPTY) cartSetIterator.remove();
-        }
+    //// Приватные методы для отработки логики
 
-        observableEmptyCartSets.clear();
-        observableEmptyCartSets.addAll(cartSets);
+    private void checkDirect() {
+        log.info("Checking direct...");
+        /// Проверяем дирекцию в отдельном потоке
+        CheckDirectTask checkDirectTask = new CheckDirectTask();
+        BooleanBinding runningBinding = checkDirectTask.stateProperty().isEqualTo(Task.State.RUNNING);
+        updateProgressIndicator.visibleProperty().bind(runningBinding);
+
+        new Thread(checkDirectTask).start();
+    }
+
+
+    private void addAllEmptyFromDirect() {
+        log.info("Getting empty CartSets from direct");
+        GettingEmptyFromDirectTask gettingEmptyFromDirectTask = new GettingEmptyFromDirectTask();
+        BooleanBinding runningBinding = gettingEmptyFromDirectTask.stateProperty().isEqualTo(Task.State.RUNNING);
+        updateProgressIndicator.visibleProperty().bind(runningBinding);
+
+        new Thread(gettingEmptyFromDirectTask).start();
     }
 
 
@@ -425,6 +427,8 @@ public class FillingController extends AbstractController {
                 direct = directs.iterator().next();
             }
             log.info("Selecting direct successful");
+            addAllEmptyFromDirect();
+
         }
 
         @Override
@@ -438,6 +442,44 @@ public class FillingController extends AbstractController {
                     .message("Ошибка при чтении из базы данных: " + exception)
                     .showException(exception);
             hideStage();
+        }
+
+    }
+
+    class GettingEmptyFromDirectTask extends Task<Collection<CartSet>> {
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
+        @Override
+        protected Collection<CartSet> call() throws Exception {
+            Collection<CartSet> cartSets = cartSetService.getCartSetsByPlace(direct);
+
+            return cartSets;
+        }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            Collection<CartSet> cartSets = getValue();
+            Iterator<CartSet> cartSetIterator = cartSets.iterator();
+            while (cartSetIterator.hasNext()) {
+                CartSet cartSet = cartSetIterator.next();
+                if (cartSet.getStatus() != CartStatus.EMPTY) cartSetIterator.remove();
+            }
+
+            observableEmptyCartSets.clear();
+            observableEmptyCartSets.addAll(cartSets);
+
+        }
+
+        @Override
+        protected void failed() {
+            super.failed();
+            Throwable exception = getException();
+            log.error("Error getting CartSets from Direct: " + exception, exception);
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Ошибка")
+                    .message("Ошибка при чтении данных: " + exception)
+                    .showException(exception);
         }
 
     }
