@@ -69,6 +69,9 @@
                                     </ImageView>
                                  </graphic>
                               </Button>
+                              <Button mnemonicParsing="false" onAction="#handleWithdrawCartSetButtonAction">
+                                  <text>Списать</text>
+                              </Button>
                           </items>
                         </ToolBar>
                      </children>

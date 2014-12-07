@@ -27,7 +27,7 @@ public class CartSetDAOImpl implements CartSetDAO {
 
     @Override
     public void addCartSet(CartSet cartSet) {
-        log.debug("Adding CartSet.."
+        log.debug("Adding CartSet: "
                 + cartSet.getModel()
                 + " (" + cartSet.getStatusDesc() + ") - "
                 + cartSet.getQuantity());

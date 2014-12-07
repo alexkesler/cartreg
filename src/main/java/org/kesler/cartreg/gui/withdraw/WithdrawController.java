@@ -25,6 +25,8 @@ import org.kesler.cartreg.service.CartSetChangeService;
 import org.kesler.cartreg.service.CartSetService;
 import org.kesler.cartreg.service.PlaceService;
 import org.kesler.cartreg.util.FXUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +37,7 @@ import java.util.*;
  */
 @Component
 public class WithdrawController extends AbstractController {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @FXML protected TableView<CartSet> defectCartSetsTableView;
     @FXML protected TableView<CartSet> withdrawCartSetsTableView;
@@ -134,6 +137,10 @@ public class WithdrawController extends AbstractController {
         withdrawCartSet();
     }
 
+    @FXML
+    protected void handleWithdrawCartSetButtonAction(ActionEvent ev) {
+        withdrawCartSet();
+    }
 
     // Управление панелью "Списано"
 

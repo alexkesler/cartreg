@@ -10,6 +10,8 @@ import org.kesler.cartreg.domain.CartStatus;
 import org.kesler.cartreg.domain.CartType;
 import org.kesler.cartreg.gui.AbstractController;
 import org.kesler.cartreg.gui.carttype.CartTypeListController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class CartSetController extends AbstractController {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @FXML protected Label cartTypeLabel;
     @FXML protected ComboBox<CartStatus> cartStatusComboBox;

@@ -32,6 +32,7 @@ import java.util.Date;
  */
 @Component
 public class ArrivalController extends AbstractController {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 
     @FXML protected Label placeLabel;

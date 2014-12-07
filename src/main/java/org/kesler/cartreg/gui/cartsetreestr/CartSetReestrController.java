@@ -24,6 +24,7 @@ import java.util.Collection;
  * Контроллер реестра картриджей
  */
 public class CartSetReestrController extends AbstractController {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @FXML protected TableView<CartSet> cartSetTableView;
     @FXML protected ProgressIndicator updateProgressIndicator;

@@ -29,7 +29,7 @@ import java.util.Collection;
  */
 @Component
 public class CartTypeListController extends AbsractListController<CartType> {
-    private final Logger log = LoggerFactory.getLogger(CartTypeListController.class);
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @FXML protected ListView<CartType> cartTypeListView;
     @FXML protected ProgressIndicator updateProgressIndicator;

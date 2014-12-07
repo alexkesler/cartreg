@@ -69,6 +69,12 @@
                                     </ImageView>
                                  </graphic>
                               </Button>
+                              <Button mnemonicParsing="false" onAction="#handleFillButtonAction">
+                                <text>Заправить</text>
+                              </Button>
+                              <Button mnemonicParsing="false" onAction="#handleDefectButtonAction">
+                                <text>Дефектовать</text>
+                              </Button>
                           </items>
                         </ToolBar>
                      </children>

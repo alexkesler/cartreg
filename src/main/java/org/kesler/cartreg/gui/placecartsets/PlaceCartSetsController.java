@@ -30,6 +30,7 @@ import java.util.*;
  */
 @Component
 public class PlaceCartSetsController extends AbsractListController<CartSet> {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @FXML protected Label placeLabel;
     @FXML protected TableView<CartSet> cartSetsTableView;

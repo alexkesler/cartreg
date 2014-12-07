@@ -24,6 +24,7 @@ import java.util.Collection;
  */
 @Component
 public class CartSetChangesController extends AbstractController {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @FXML protected TableView<CartSetChange> cartSetChangesTableView;
     @FXML protected ProgressIndicator updateProgressIndicator;

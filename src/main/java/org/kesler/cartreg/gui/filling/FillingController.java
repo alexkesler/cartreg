@@ -22,6 +22,8 @@ import org.kesler.cartreg.service.CartSetChangeService;
 import org.kesler.cartreg.service.CartSetService;
 import org.kesler.cartreg.service.PlaceService;
 import org.kesler.cartreg.util.FXUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +34,7 @@ import java.util.*;
  */
 @Component
 public class FillingController extends AbstractController {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @FXML protected TableView<CartSet> emptyCartSetsTableView;
     @FXML protected TableView<CartSet> filledCartSetsTableView;
@@ -137,6 +140,17 @@ public class FillingController extends AbstractController {
     protected void handleDefectMenuItemAction(ActionEvent ev) {
         defectCartSet();
     }
+
+    @FXML
+    protected void handleFillButtonAction(ActionEvent ev) {
+        fillCartSet();
+    }
+
+    @FXML
+    protected void handleDefectButtonAction(ActionEvent ev) {
+        defectCartSet();
+    }
+
 
     // Управление панелью "Заправленные"
 
@@ -374,10 +388,16 @@ public class FillingController extends AbstractController {
 
     private void saveCartSets() {
 
+        // Список уникальных исходных наборов
+//        Set<CartSet> sourceCartSets = new HashSet<CartSet>();
+
         // сохраняем поступившие наборы
         for (CartSet filledCartSet:observableFilledCartSets) {
 
-            log.info("Adding filled CartSet...");
+            log.info("Adding filled CartSet: "
+                    + filledCartSet.getModel()
+                    + " (" + filledCartSet.getStatusDesc() + ") - "
+                    + filledCartSet.getQuantity());
             AddCartSetTask addCartSetTask = new AddCartSetTask(filledCartSet);
             BooleanBinding runningBinding = addCartSetTask.stateProperty().isEqualTo(Task.State.RUNNING);
             updateProgressIndicator.visibleProperty().bind(runningBinding);
@@ -386,19 +406,16 @@ public class FillingController extends AbstractController {
 
             CartSet sourceCartSet = filledToEmptyCartSets.get(filledCartSet);
 
-            log.info("Updating source CartSet...");
-            UpdateCartSetTask updateCartSetTask = new UpdateCartSetTask(sourceCartSet);
-            runningBinding = updateCartSetTask.stateProperty().isEqualTo(Task.State.RUNNING);
-            updateProgressIndicator.visibleProperty().bind(runningBinding);
+//            sourceCartSets.add(sourceCartSet);
 
-            new Thread(updateCartSetTask).start();
-
-
-            saveCartSetChange(sourceCartSet,filledCartSet, CartSetChange.Type.FILL);
+            saveCartSetChange(sourceCartSet, filledCartSet, CartSetChange.Type.FILL);
         }
         // сохраняем отправленные наборы
         for (CartSet defectCartSet:observableDefectCartSet) {
-            log.info("Adding defect CartSet...");
+            log.info("Adding defect CartSet: "
+                    + defectCartSet.getModel()
+                    + " (" + defectCartSet.getStatusDesc() + ") - "
+                    + defectCartSet.getQuantity());
             AddCartSetTask addCartSetTask = new AddCartSetTask(defectCartSet);
             BooleanBinding runningBinding = addCartSetTask.stateProperty().isEqualTo(Task.State.RUNNING);
             updateProgressIndicator.visibleProperty().bind(runningBinding);
@@ -407,14 +424,27 @@ public class FillingController extends AbstractController {
 
             CartSet sourceCartSet = defectToEmptyCartSet.get(defectCartSet);
 
-            log.info("Updating source CartSet...");
+//            sourceCartSets.add(sourceCartSet);
+
+            saveCartSetChange(sourceCartSet, defectCartSet, CartSetChange.Type.DEFECT);
+        }
+
+
+        // Сохраняем исходные наборы
+
+        for (CartSet sourceCartSet: observableEmptyCartSets) {
+            log.info("Updating source CartSet: "
+                    + sourceCartSet.getModel()
+                    + " (" + sourceCartSet.getStatusDesc() + ") - "
+                    + sourceCartSet.getQuantity());
+
+
             UpdateCartSetTask updateCartSetTask = new UpdateCartSetTask(sourceCartSet);
-            runningBinding = updateCartSetTask.stateProperty().isEqualTo(Task.State.RUNNING);
+            BooleanBinding runningBinding = updateCartSetTask.stateProperty().isEqualTo(Task.State.RUNNING);
             updateProgressIndicator.visibleProperty().bind(runningBinding);
 
             new Thread(updateCartSetTask).start();
 
-            saveCartSetChange(sourceCartSet, defectCartSet, CartSetChange.Type.DEFECT);
         }
 
     }
@@ -454,6 +484,7 @@ public class FillingController extends AbstractController {
     // Классы для обновления данных в отдельном потоке
 
     class AddCartSetTask extends Task<Void> {
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
         private final CartSet cartSet;
 
         AddCartSetTask(CartSet cartSet) {
@@ -489,6 +520,7 @@ public class FillingController extends AbstractController {
     }
 
     class UpdateCartSetTask extends Task<Void> {
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
         private final CartSet cartSet;
 
         UpdateCartSetTask(CartSet cartSet) {
@@ -525,6 +557,7 @@ public class FillingController extends AbstractController {
 
 
     class SaveChangeTask extends Task<Void> {
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
         private CartSetChange cartSetChange;
 
         SaveChangeTask(CartSetChange cartSetChange) {
