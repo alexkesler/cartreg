@@ -305,11 +305,11 @@ public class ExchangeController extends AbstractController {
     private void checkDirect() {
         log.info("Checking direct...");
         /// Проверяем дирекцию в отдельном потоке
-        DirectCheckTask directCheckTask = new DirectCheckTask();
-        BooleanBinding runningBinding = directCheckTask.stateProperty().isEqualTo(Task.State.RUNNING);
+        CheckDirectTask checkDirectTask = new CheckDirectTask();
+        BooleanBinding runningBinding = checkDirectTask.stateProperty().isEqualTo(Task.State.RUNNING);
         updateProgressIndicator.visibleProperty().bind(runningBinding);
 
-        new Thread(directCheckTask).start();
+        new Thread(checkDirectTask).start();
 
     }
 
@@ -335,7 +335,7 @@ public class ExchangeController extends AbstractController {
 
     ///// Класс для сохранения в отдельном потоке
 
-    class DirectCheckTask extends Task<Collection<Place>> {
+    class CheckDirectTask extends Task<Collection<Place>> {
         @Override
         protected Collection<Place> call() throws Exception {
 
@@ -377,7 +377,7 @@ public class ExchangeController extends AbstractController {
             } else {
                 direct = directs.iterator().next();
             }
-            log.info("Selecting direct successfull");
+            log.info("Selecting direct successful");
         }
 
         @Override
@@ -390,8 +390,8 @@ public class ExchangeController extends AbstractController {
                     .title("Ошибка")
                     .message("Ошибка при чтении из базы данных: " + exception)
                     .showException(exception);
+            hideStage();
         }
-
 
     }
 

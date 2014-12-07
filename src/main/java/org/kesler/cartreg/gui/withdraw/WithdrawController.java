@@ -78,7 +78,7 @@ public class WithdrawController extends AbstractController {
 
     @Override
     public void show(Window owner) {
-        if (!checkDirect(owner)) return;
+        checkDirect();
 
         clearLists();
         addAllDefectFromDirect();
@@ -86,38 +86,14 @@ public class WithdrawController extends AbstractController {
         super.show(owner,"Списание картриджей");
     }
 
-    private boolean checkDirect(Window owner) {
-        Collection<Place> directs = placeService.getDirects();
-        if (directs.size()==0) {
-            Dialogs.create()
-                    .owner(owner)
-                    .title("Внимание")
-                    .message("Дирекция не определена, добавьте дирекцию")
-                    .showWarning();
-            Place.Type[] placeTypes = {Place.Type.DIRECT};
-            placeListController.showAndWaitSelect(owner, placeTypes);
-            if (placeListController.getResult()== Result.OK) {
-                direct = placeListController.getSelectedItem();
-            } else {
-                return false;
-            }
-        } else if (directs.size()>1) {
-            Dialogs.create()
-                    .owner(owner)
-                    .title("Внимание")
-                    .message("Дирекция не определена, выберите дирекцию")
-                    .showWarning();
-            Place.Type[] placeTypes = {Place.Type.DIRECT};
-            placeListController.showAndWaitSelect(owner, placeTypes);
-            if (placeListController.getResult()== Result.OK) {
-                direct = placeListController.getSelectedItem();
-            } else {
-                return false;
-            }
-        } else {
-            direct = directs.iterator().next();
-        }
-        return true;
+    private void checkDirect() {
+        log.info("Checking direct...");
+        /// Проверяем дирекцию в отдельном потоке
+        CheckDirectTask checkDirectTask = new CheckDirectTask();
+        BooleanBinding runningBinding = checkDirectTask.stateProperty().isEqualTo(Task.State.RUNNING);
+        updateProgressIndicator.visibleProperty().bind(runningBinding);
+
+        new Thread(checkDirectTask).start();
     }
 
     // Управление Панелью "Неисправные"
@@ -185,13 +161,6 @@ public class WithdrawController extends AbstractController {
                 .showConfirm();
         if (response== Dialog.ACTION_YES) {
             saveCartSets();
-            clearLists();
-            Dialogs.create()
-                    .owner(stage)
-                    .title("Оповещение")
-                    .message("Списано")
-                    .showInformation();
-            stage.hide();
         }
 
     }
@@ -296,50 +265,13 @@ public class WithdrawController extends AbstractController {
 
     private void saveCartSets() {
 
-        // сохраняем поступившие наборы
-        for (CartSet filledCartSet: observableWithdrawCartSets) {
-
-            log.info("Adding filled CartSet...");
-            AddCartSetTask addCartSetTask = new AddCartSetTask(filledCartSet);
-            BooleanBinding runningBinding = addCartSetTask.stateProperty().isEqualTo(Task.State.RUNNING);
-            updateProgressIndicator.visibleProperty().bind(runningBinding);
-
-            new Thread(addCartSetTask).start();
-
-            CartSet sourceCartSet = withdrawToDefectCartSets.get(filledCartSet);
-
-            log.info("Updating source CartSet...");
-            UpdateCartSetTask updateCartSetTask = new UpdateCartSetTask(sourceCartSet);
-            runningBinding = updateCartSetTask.stateProperty().isEqualTo(Task.State.RUNNING);
-            updateProgressIndicator.visibleProperty().bind(runningBinding);
-
-            new Thread(updateCartSetTask).start();
-
-
-            saveCartSetChange(sourceCartSet,filledCartSet, CartSetChange.Type.WITHDRAW);
-        }
-
-    }
-
-    private void saveCartSetChange(CartSet fromCartSet, CartSet toCartSet, CartSetChange.Type type) {
-        CartSetChange cartSetChange = new CartSetChange();
-        cartSetChange.setType(type);
-        cartSetChange.setFromPlace(fromCartSet.getPlace());
-        cartSetChange.setToPlace(toCartSet.getPlace());
-        cartSetChange.setCartType(fromCartSet.getType());
-        cartSetChange.setFromStatus(fromCartSet.getStatus());
-        cartSetChange.setToStatus(toCartSet.getStatus());
-        cartSetChange.setQuantity(toCartSet.getQuantity());
-        cartSetChange.setChangeDate(new Date());
-
-
-        log.info("Saving change... ");
-        SaveChangeTask saveChangeTask = new SaveChangeTask(cartSetChange);
-
-        BooleanBinding runningBinding = saveChangeTask.stateProperty().isEqualTo(Task.State.RUNNING);
+        log.info("Saving withdraw data");
+        SavingTask savingTask = new SavingTask();
+        BooleanBinding runningBinding = savingTask.stateProperty().isEqualTo(Task.State.RUNNING);
         updateProgressIndicator.visibleProperty().bind(runningBinding);
 
-        new Thread(saveChangeTask).start();
+        new Thread(savingTask).start();
+
     }
 
 
@@ -351,19 +283,90 @@ public class WithdrawController extends AbstractController {
     }
 
 
-    // Классы для обновления данных в отдельном потоке
+    // Классы для сохранения данных в отдельном потоке
 
-    class AddCartSetTask extends Task<Void> {
-        private final CartSet cartSet;
+    class CheckDirectTask extends Task<Collection<Place>> {
+        @Override
+        protected Collection<Place> call() throws Exception {
 
-        AddCartSetTask(CartSet cartSet) {
-            this.cartSet = cartSet;
+            Collection<Place> directs = placeService.getDirects();
+
+            return directs;
         }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            Collection<Place> directs = getValue();
+            if (directs.size()==0) {
+                Dialogs.create()
+                        .owner(stage)
+                        .title("Внимание")
+                        .message("Дирекция не определена, добавьте дирекцию")
+                        .showWarning();
+                Place.Type[] placeTypes = {Place.Type.DIRECT};
+                placeListController.showAndWaitSelect(stage, placeTypes);
+                if (placeListController.getResult()==Result.OK) {
+                    direct = placeListController.getSelectedItem();
+                } else {
+                    hideStage();
+                }
+            } else if (directs.size()>1) {
+                Dialogs.create()
+                        .owner(stage)
+                        .title("Внимание")
+                        .message("Дирекция не определена, выберите дирекцию")
+                        .showWarning();
+                Place.Type[] placeTypes = {Place.Type.DIRECT};
+                placeListController.showAndWaitSelect(stage, placeTypes);
+                if (placeListController.getResult()==Result.OK) {
+                    direct = placeListController.getSelectedItem();
+                } else {
+                    hideStage();
+                }
+            } else {
+                direct = directs.iterator().next();
+            }
+            log.info("Selecting direct successful");
+        }
+
+        @Override
+        protected void failed() {
+            super.failed();
+            Throwable exception = getException();
+            log.error("Reading error: " + exception, exception);
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Ошибка")
+                    .message("Ошибка при чтении из базы данных: " + exception)
+                    .showException(exception);
+            hideStage();
+        }
+
+    }
+
+
+
+    class SavingTask extends Task<Void> {
         @Override
         protected Void call() throws Exception {
-            log.debug("Adding CartSet...");
 
-            cartSetService.addCartSet(cartSet);
+            // сохраняем поступившие наборы
+            for (CartSet withdrawCartSet: observableWithdrawCartSets) {
+
+                log.info("Adding withdraw CartSet...");
+                cartSetService.addCartSet(withdrawCartSet);
+                log.info("Adding withdraw CartSet complete");
+
+                CartSet sourceCartSet = withdrawToDefectCartSets.get(withdrawCartSet);
+
+                log.info("Updating source CartSet...");
+                cartSetService.updateCartSet(sourceCartSet);
+                log.info("Adding source CartSet complete");
+
+
+                saveCartSetChange(sourceCartSet,withdrawCartSet, CartSetChange.Type.WITHDRAW);
+            }
 
             return null;
         }
@@ -371,91 +374,49 @@ public class WithdrawController extends AbstractController {
         @Override
         protected void succeeded() {
             super.succeeded();
-            log.info("Adding CartSet complete");
-            updateContent();
+            log.info("Saving withdraw data complete");
+            clearLists();
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Оповещение")
+                    .message("Списание сохранено")
+                    .showInformation();
+            hideStage();
+
         }
 
         @Override
         protected void failed() {
             super.failed();
             Throwable exception = getException();
-            log.error("Error adding CartSet: " + exception, exception);
+            log.error("Error saving withdraw data: " + exception, exception);
             Dialogs.create()
                     .owner(stage)
                     .title("Ошибка")
-                    .message("Ошибка при добавлении набора картриджей: " + exception)
+                    .message("Ошибка при сохранении данных: " + exception)
                     .showException(exception);
         }
-    }
-
-    class UpdateCartSetTask extends Task<Void> {
-        private final CartSet cartSet;
-
-        UpdateCartSetTask(CartSet cartSet) {
-            this.cartSet = cartSet;
-        }
-        @Override
-        protected Void call() throws Exception {
-            log.debug("Updating CartSet...");
-
-            cartSetService.updateCartSet(cartSet);
-
-            return null;
-        }
-
-        @Override
-        protected void succeeded() {
-            super.succeeded();
-            log.info("Updating CartSet complete");
-            updateContent();
-        }
-
-        @Override
-        protected void failed() {
-            super.failed();
-            Throwable exception = getException();
-            log.error("Error updating CartSet: " + exception, exception);
-            Dialogs.create()
-                    .owner(stage)
-                    .title("Ошибка")
-                    .message("Ошибка при обновлении набора картриджей: " + exception)
-                    .showException(exception);
-        }
-    }
 
 
-    class SaveChangeTask extends Task<Void> {
-        private CartSetChange cartSetChange;
+        private void saveCartSetChange(CartSet fromCartSet, CartSet toCartSet, CartSetChange.Type type) {
+            CartSetChange cartSetChange = new CartSetChange();
+            cartSetChange.setType(type);
+            cartSetChange.setFromPlace(fromCartSet.getPlace());
+            cartSetChange.setToPlace(toCartSet.getPlace());
+            cartSetChange.setCartType(fromCartSet.getType());
+            cartSetChange.setFromStatus(fromCartSet.getStatus());
+            cartSetChange.setToStatus(toCartSet.getStatus());
+            cartSetChange.setQuantity(toCartSet.getQuantity());
+            cartSetChange.setChangeDate(new Date());
 
-        SaveChangeTask(CartSetChange cartSetChange) {
-            this.cartSetChange = cartSetChange;
-        }
 
-
-        @Override
-        protected Void call() throws Exception {
-            log.debug("Saving change...");
+            log.info("Saving change... ");
             cartSetChangeService.addChange(cartSetChange);
-            return null;
+            log.info("Saving change complete");
+
         }
 
-        @Override
-        protected void succeeded() {
-            super.succeeded();
-            log.info("Saving change complete.");
-        }
-
-        @Override
-        protected void failed() {
-            super.failed();
-            Throwable exception = getException();
-            log.error("Error saving change: " + exception, exception);
-            Dialogs.create()
-                    .owner(stage)
-                    .title("Ошибка")
-                    .message("Ошибка при сохранении перемещения: " + exception)
-                    .showException(exception);
-        }
     }
+
 
 }

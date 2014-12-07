@@ -77,7 +77,7 @@ public class FillingController extends AbstractController {
 
     @Override
     public void show(Window owner) {
-        if (!checkDirect(owner)) return;
+        checkDirect();
 
         clearLists();
         addAllEmptyFromDirect();
@@ -85,38 +85,14 @@ public class FillingController extends AbstractController {
         super.show(owner,"Заправка картриджей");
     }
 
-    private boolean checkDirect(Window owner) {
-        Collection<Place> directs = placeService.getDirects();
-        if (directs.size()==0) {
-            Dialogs.create()
-                    .owner(owner)
-                    .title("Внимание")
-                    .message("Дирекция не определена, добавьте дирекцию")
-                    .showWarning();
-            Place.Type[] placeTypes = {Place.Type.DIRECT};
-            placeListController.showAndWaitSelect(owner, placeTypes);
-            if (placeListController.getResult()== Result.OK) {
-                direct = placeListController.getSelectedItem();
-            } else {
-                return false;
-            }
-        } else if (directs.size()>1) {
-            Dialogs.create()
-                    .owner(owner)
-                    .title("Внимание")
-                    .message("Дирекция не определена, выберите дирекцию")
-                    .showWarning();
-            Place.Type[] placeTypes = {Place.Type.DIRECT};
-            placeListController.showAndWaitSelect(owner, placeTypes);
-            if (placeListController.getResult()== Result.OK) {
-                direct = placeListController.getSelectedItem();
-            } else {
-                return false;
-            }
-        } else {
-            direct = directs.iterator().next();
-        }
-        return true;
+    private void checkDirect() {
+        log.info("Checking direct...");
+        /// Проверяем дирекцию в отдельном потоке
+        CheckDirectTask checkDirectTask = new CheckDirectTask();
+        BooleanBinding runningBinding = checkDirectTask.stateProperty().isEqualTo(Task.State.RUNNING);
+        updateProgressIndicator.visibleProperty().bind(runningBinding);
+
+        new Thread(checkDirectTask).start();
     }
 
     // Управление Панелью "На заправку"
@@ -405,6 +381,66 @@ public class FillingController extends AbstractController {
 
 
     // Классы для обновления данных в отдельном потоке
+
+    class CheckDirectTask extends Task<Collection<Place>> {
+        @Override
+        protected Collection<Place> call() throws Exception {
+
+            Collection<Place> directs = placeService.getDirects();
+
+            return directs;
+        }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            Collection<Place> directs = getValue();
+            if (directs.size()==0) {
+                Dialogs.create()
+                        .owner(stage)
+                        .title("Внимание")
+                        .message("Дирекция не определена, добавьте дирекцию")
+                        .showWarning();
+                Place.Type[] placeTypes = {Place.Type.DIRECT};
+                placeListController.showAndWaitSelect(stage, placeTypes);
+                if (placeListController.getResult()==Result.OK) {
+                    direct = placeListController.getSelectedItem();
+                } else {
+                    hideStage();
+                }
+            } else if (directs.size()>1) {
+                Dialogs.create()
+                        .owner(stage)
+                        .title("Внимание")
+                        .message("Дирекция не определена, выберите дирекцию")
+                        .showWarning();
+                Place.Type[] placeTypes = {Place.Type.DIRECT};
+                placeListController.showAndWaitSelect(stage, placeTypes);
+                if (placeListController.getResult()==Result.OK) {
+                    direct = placeListController.getSelectedItem();
+                } else {
+                    hideStage();
+                }
+            } else {
+                direct = directs.iterator().next();
+            }
+            log.info("Selecting direct successful");
+        }
+
+        @Override
+        protected void failed() {
+            super.failed();
+            Throwable exception = getException();
+            log.error("Reading error: " + exception, exception);
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Ошибка")
+                    .message("Ошибка при чтении из базы данных: " + exception)
+                    .showException(exception);
+            hideStage();
+        }
+
+    }
 
 
     class SavingTask extends Task<Void> {
