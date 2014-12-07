@@ -140,6 +140,14 @@ public class ExchangeController extends AbstractController {
         placeCartSetsController.showAndWaitSelect(stage, branch);
         if (placeCartSetsController.getResult()==Result.OK) {
             CartSet sourceCartSet = placeCartSetsController.getSelectedItem();
+            // Проверяем, если выбран уже существующий источник - редактируем существующую запись
+            for (Map.Entry<CartSet,CartSet> toFromEntry:toFromCartSets.entrySet()) {
+                if (toFromEntry.getValue().equals(sourceCartSet)) {
+                    inCartSetsTableView.getSelectionModel().select(observableInCartSets.indexOf(toFromEntry.getKey()));
+                    editInCartSet();
+                    return;
+                }
+            }
             CartSet moveCartSet = sourceCartSet.copyCartSet();
             Integer moveQuantity = 4;
             Integer sourceQuantity = sourceCartSet.getQuantity();
@@ -203,6 +211,14 @@ public class ExchangeController extends AbstractController {
         placeCartSetsController.showAndWaitSelect(stage, direct,statuses);
         if (placeCartSetsController.getResult()==Result.OK) {
             CartSet sourceCartSet = placeCartSetsController.getSelectedItem();
+            // Проверяем, если выбран уже существующий источник - редактируем существующую запись
+            for (Map.Entry<CartSet,CartSet> toFromEntry:toFromCartSets.entrySet()) {
+                if (toFromEntry.getValue().equals(sourceCartSet)) {
+                    outCartSetsTableView.getSelectionModel().select(observableOutCartSets.indexOf(toFromEntry.getKey()));
+                    editOutCartSet();
+                    return;
+                }
+            }
             CartSet moveCartSet = sourceCartSet.copyCartSet();
             Integer moveQuantity = 4;
             Integer sourceQuantity = sourceCartSet.getQuantity();

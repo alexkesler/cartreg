@@ -255,6 +255,7 @@ public class FillingController extends AbstractController {
                 filledCartSet.setQuantity(filledQuantity);
                 selectedEmptyCartSet.setQuantity(emptyQuantity);
 
+                // При повторной заправке той же позиции итоговую суммируем
                 for (CartSet cartSet:observableFilledCartSets) {
                     if (cartSet.mergeCardSet(filledCartSet)) {
                         updateContent();
@@ -286,6 +287,7 @@ public class FillingController extends AbstractController {
                 defectCartSet.setQuantity(defectQuantity);
                 selectedEmptyCartSet.setQuantity(emptyQuantity);
 
+                // При повторной дефектовке той же позиции итоговую суммируем
                 for (CartSet cartSet:observableDefectCartSet) {
                     if (cartSet.mergeCardSet(defectCartSet)) {
                         updateContent();

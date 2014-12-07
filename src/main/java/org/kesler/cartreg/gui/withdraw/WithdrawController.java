@@ -215,6 +215,7 @@ public class WithdrawController extends AbstractController {
                 withdrawCartSet.setQuantity(withdrawQuantity);
                 selectedDefectCartSet.setQuantity(defectQuantity);
 
+                // При повторном списании той же позиции суммируем итоговую
                 for (CartSet cartSet:observableWithdrawCartSets) {
                     if (cartSet.mergeCardSet(withdrawCartSet)) {
                         updateContent();
