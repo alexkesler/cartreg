@@ -171,6 +171,15 @@ public class MoveController extends AbstractController {
         placeCartSetsController.showAndWaitSelect(stage, sourcePlace);
         if (placeCartSetsController.getResult()==Result.OK) {
             CartSet sourceCartSet = placeCartSetsController.getSelectedItem();
+            // если пытаемся добавить существующий - то редактируем
+            for (Map.Entry<CartSet,CartSet> toFromEntry:toFromCartSets.entrySet()) {
+                if (toFromEntry.getValue().equals(sourceCartSet)) {
+                    cartSetsTableView.getSelectionModel().select(observableCartSets.indexOf(toFromEntry.getKey()));
+                    editCartSet();
+                    return;
+                }
+            }
+
             CartSet moveCartSet = sourceCartSet.copyCartSet();
 
             quantityController.showAndWait(stage,sourceCartSet.getQuantity(),sourceCartSet.getQuantity());
@@ -302,7 +311,7 @@ public class MoveController extends AbstractController {
                 cartSetService.updateCartSet(sourceCartSet);
                 log.info("Updating source CartSet complete");
 
-                saveCartSetChange(sourceCartSet,moveCartSet);
+                saveCartSetChange(sourceCartSet, moveCartSet);
             }
 
 

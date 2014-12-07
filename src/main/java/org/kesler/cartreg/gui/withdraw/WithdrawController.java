@@ -215,6 +215,14 @@ public class WithdrawController extends AbstractController {
                 withdrawCartSet.setQuantity(withdrawQuantity);
                 selectedDefectCartSet.setQuantity(defectQuantity);
 
+                for (CartSet cartSet:observableWithdrawCartSets) {
+                    if (cartSet.mergeCardSet(withdrawCartSet)) {
+                        updateContent();
+                        return;
+                    }
+                }
+
+
                 observableWithdrawCartSets.addAll(withdrawCartSet);
                 withdrawToDefectCartSets.put(withdrawCartSet, selectedDefectCartSet);
 

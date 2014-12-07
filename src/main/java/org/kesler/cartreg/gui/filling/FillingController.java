@@ -255,6 +255,13 @@ public class FillingController extends AbstractController {
                 filledCartSet.setQuantity(filledQuantity);
                 selectedEmptyCartSet.setQuantity(emptyQuantity);
 
+                for (CartSet cartSet:observableFilledCartSets) {
+                    if (cartSet.mergeCardSet(filledCartSet)) {
+                        updateContent();
+                        return;
+                    }
+                }
+
                 observableFilledCartSets.addAll(filledCartSet);
                 filledToEmptyCartSets.put(filledCartSet, selectedEmptyCartSet);
 
@@ -278,6 +285,13 @@ public class FillingController extends AbstractController {
                 defectCartSet.setStatus(CartStatus.DEFECT);
                 defectCartSet.setQuantity(defectQuantity);
                 selectedEmptyCartSet.setQuantity(emptyQuantity);
+
+                for (CartSet cartSet:observableDefectCartSet) {
+                    if (cartSet.mergeCardSet(defectCartSet)) {
+                        updateContent();
+                        return;
+                    }
+                }
 
                 observableDefectCartSet.addAll(defectCartSet);
                 defectToEmptyCartSet.put(defectCartSet, selectedEmptyCartSet);

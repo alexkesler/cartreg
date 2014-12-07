@@ -117,14 +117,22 @@ public class ArrivalController extends AbstractController {
 
     private void addCartSet() {
         log.info("Handle add CartSet");
-        CartSet cartSet = new CartSet();
-        cartSet.setStatus(CartStatus.NEW);
-        cartSet.setQuantity(50);
-        cartSet.setPlace(place);
-        cartSetController.showAndWait(stage, cartSet);
+        CartSet newCartSet = new CartSet();
+        newCartSet.setStatus(CartStatus.NEW);
+        newCartSet.setQuantity(50);
+        newCartSet.setPlace(place);
+        cartSetController.showAndWait(stage, newCartSet);
         if (cartSetController.getResult()==Result.OK) {
-            observableCartSets.add(cartSet);
-            cartSetTableView.getSelectionModel().select(cartSet);
+            // Проверяем если есть такие - суммируем и выходим
+            for (CartSet cartSet:observableCartSets) {
+                if (cartSet.mergeCardSet(newCartSet)) {
+                    FXUtils.triggerUpdateTableView(cartSetTableView);
+                    cartSetTableView.getSelectionModel().select(cartSet);
+                    return;
+                }
+            }
+            observableCartSets.add(newCartSet);
+            cartSetTableView.getSelectionModel().select(newCartSet);
         }
     }
 
@@ -134,9 +142,10 @@ public class ArrivalController extends AbstractController {
         if (selectedCartSet!=null) {
             cartSetController.showAndWait(stage, selectedCartSet);
             if (cartSetController.getResult()==Result.OK) {
-                FXUtils.updateObservableList(observableCartSets);
+                FXUtils.triggerUpdateTableView(cartSetTableView);
+                cartSetTableView.getSelectionModel().select(selectedCartSet);
             }
-            cartSetTableView.getSelectionModel().select(selectedCartSet);
+
         }
     }
 
@@ -213,7 +222,7 @@ public class ArrivalController extends AbstractController {
             Dialogs.create()
                     .owner(stage)
                     .title("Оповещение")
-                    .message("Прием/выдача сохранены")
+                    .message("Поступление сохранено")
                     .showInformation();
 
             hideStage();
