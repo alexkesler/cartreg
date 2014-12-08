@@ -4,7 +4,7 @@
 
     <groupId>org.kesler</groupId>
     <artifactId>CartReg</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.0.0</version>
     <packaging>jar</packaging>
 
     <name>CartReg</name>
@@ -94,6 +94,55 @@
                         </manifest>
                     </archive>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                <artifactId>launch4j-maven-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>l4j-clui</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>launch4j</goal>
+                        </goals>
+                        <configuration>
+                            <headerType>gui</headerType>
+                            <outfile>target/${project.artifactId}.exe</outfile>
+                            <jar>target/${project.artifactId}.jar</jar>
+                            <errTitle>${product.title}</errTitle>
+                            <icon>src/main/resources/images/Printer.ico</icon>
+                            <splash>
+                                <file>src/main/resources/images/mfc_cartreg.bmp</file>
+                                <waitForWindow>true</waitForWindow>
+                                <timeout>10</timeout>
+                            </splash>
+                            <classPath>
+                                <mainClass>org.kesler.cartreg.CartRegApp</mainClass>
+                                <addDependencies>true</addDependencies>
+                                <preCp>anything</preCp>
+                            </classPath>
+                            <jre>
+                                <path>jre8</path>
+                                <!--<minVersion>1.8.0</minVersion> -->
+                                <maxHeapSize>256</maxHeapSize>
+                            </jre>
+                            <versionInfo>
+                                <fileVersion>${project.version}</fileVersion>
+                                <txtFileVersion>${project.version}</txtFileVersion>
+                                <fileDescription>Учет картриджей</fileDescription>
+                                <copyright>Copyright © 2014 ${product.company}</copyright>
+                                <productVersion>${project.version}</productVersion>
+                                <txtProductVersion>${project.version}</txtProductVersion>
+                                <companyName>${product.company}</companyName>
+                                <productName>${product.title}</productName>
+                                <internalName>${project.artifactId}</internalName>
+                                <originalFilename>${project.artifactId}.exe</originalFilename>
+                            </versionInfo>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
 
