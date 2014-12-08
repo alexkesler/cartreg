@@ -18,10 +18,9 @@ import org.kesler.cartreg.service.CartSetService;
 import org.kesler.cartreg.service.CartTypeService;
 import org.kesler.cartreg.service.PlaceService;
 import org.kesler.cartreg.service.support.*;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.*;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBuilder;
@@ -39,8 +38,11 @@ import java.util.Properties;
 //@ComponentScan({"org.kesler.*"})
 //@EnableTransactionManagement
 //@Import(CartRegAppRepositoryFactory.class)
+@PropertySource(value="file:config/CartReg.properties")
 public class CartRegAppServiceFactory {
 
+    @Autowired
+    private Environment env;
 
     @Bean
     public PlaceService placeService() {

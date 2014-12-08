@@ -4,4 +4,4 @@ target/
 *.iml
 .idea/
 log/
-jre7/
+jre8/
