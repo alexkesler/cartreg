@@ -2,6 +2,7 @@ package org.kesler.cartreg;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.kesler.cartreg.gui.main.MainController;
 import org.slf4j.Logger;
@@ -26,7 +27,9 @@ public class CartRegApp extends Application {
         Scene scene = new Scene(mainController.getRoot(), 700, 500);
         stage.setScene(scene);
         stage.setTitle("Учет картриджей");
-//        stage.getIcons().add(new Image(SimpleRestApp.class.getResourceAsStream("/images/Bibble.png")));
+        Image icon = new Image(this.getClass().getResourceAsStream("/images/Printer.png"));
+
+        stage.getIcons().add(icon);
         stage.show();
     }
 }

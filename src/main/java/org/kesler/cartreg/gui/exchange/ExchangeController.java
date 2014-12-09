@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableView;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Window;
 import org.controlsfx.control.action.Action;
@@ -81,7 +82,9 @@ public class ExchangeController extends AbstractController {
         observableInCartSets.clear();
         observableOutCartSets.clear();
         toFromCartSets.clear();
-        super.show(owner, "Прием/выдача");
+        Image icon = new Image(this.getClass().getResourceAsStream("/images/exchange.png"));
+
+        super.show(owner, "Прием/выдача", icon);
     }
 
     @FXML

@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableView;
+import javafx.scene.image.Image;
 import javafx.stage.Window;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
@@ -76,7 +77,9 @@ public class MoveController extends AbstractController {
     @Override
     public void show(Window owner) {
         clearLists();
-        super.show(owner, "Перемещение");
+        Image icon = new Image(this.getClass().getResourceAsStream("/images/transform.png"));
+
+        super.show(owner, "Перемещение", icon);
     }
 
     @FXML

@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableView;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Window;
 import org.controlsfx.control.action.Action;
@@ -79,8 +80,8 @@ public class FillingController extends AbstractController {
     public void show(Window owner) {
 
         clearLists();
-
-        super.show(owner,"Заправка картриджей");
+        Image icon = new Image(this.getClass().getResourceAsStream("/images/gear_preferences.png"));
+        super.show(owner,"Заправка картриджей",icon);
         checkDirect();
     }
 

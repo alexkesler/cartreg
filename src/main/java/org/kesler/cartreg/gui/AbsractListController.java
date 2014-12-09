@@ -2,6 +2,7 @@ package org.kesler.cartreg.gui;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ToolBar;
+import javafx.scene.image.Image;
 import javafx.stage.Window;
 
 /**
@@ -43,6 +44,12 @@ public abstract class AbsractListController<T> extends AbstractController {
         super.showAndWait(owner, title);
     }
 
+    public void showAndWait(Window owner, String title, Image icon) {
+        select=false;
+        switchToolBar();
+        super.showAndWait(owner, title, icon);
+    }
+
     public void showAndWaitSelect(Window owner) {
         select=true;
         switchToolBar();
@@ -53,6 +60,12 @@ public abstract class AbsractListController<T> extends AbstractController {
         select=true;
         switchToolBar();
         super.showAndWait(owner, title);
+    }
+
+    public void showAndWaitSelect(Window owner, String title, Image icon) {
+        select=true;
+        switchToolBar();
+        super.showAndWait(owner, title, icon);
     }
 
 

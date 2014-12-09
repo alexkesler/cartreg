@@ -36,13 +36,6 @@ public abstract class FXUtils {
         listView.fireEvent(event);
     }
 
-    public static Date localDateToDate(LocalDate localDate) {
-        return localDate==null?null:Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-    }
-
-    public static LocalDate dateToLocalDate(Date date) {
-        return date==null?null:date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-    }
 
     public static String getJarPath() {
 

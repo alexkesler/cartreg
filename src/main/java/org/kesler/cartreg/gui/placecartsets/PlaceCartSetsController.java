@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableView;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Window;
 import org.controlsfx.dialog.Dialogs;
@@ -57,19 +58,25 @@ public class PlaceCartSetsController extends AbsractListController<CartSet> {
     public void show(Window owner, Place place) {
         this.place = place;
         statuses = null;
-        super.show(owner, "Наличие картриджей");
+        Image icon = new Image(this.getClass().getResourceAsStream("/images/preferences.png"));
+
+        super.show(owner, "Наличие картриджей", icon);
     }
 
     public void showAndWaitSelect(Window owner, Place place) {
         this.place = place;
         statuses = null;
-        super.showAndWaitSelect(owner, "Наличие картриджей");
+        Image icon = new Image(this.getClass().getResourceAsStream("/images/preferences.png"));
+
+        super.showAndWaitSelect(owner, "Наличие картриджей", icon);
     }
 
     public void showAndWaitSelect(Window owner, Place place, CartStatus[] statuses) {
         this.place = place;
         this.statuses = statuses;
-        super.showAndWaitSelect(owner, "Наличие картриджей");
+        Image icon = new Image(this.getClass().getResourceAsStream("/images/preferences.png"));
+
+        super.showAndWaitSelect(owner, "Наличие картриджей", icon);
     }
 
     @FXML protected void handleAddButtonAction(ActionEvent ev) {

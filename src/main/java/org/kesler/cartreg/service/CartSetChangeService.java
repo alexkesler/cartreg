@@ -4,10 +4,6 @@ import org.kesler.cartreg.domain.CartSetChange;
 
 import java.util.Collection;
 
-/**
- * Created by alex on 26.11.14.
- */
-
 public interface CartSetChangeService {
     public Collection<CartSetChange> getAllChanges();
     public void addChange(CartSetChange change);

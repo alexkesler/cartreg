@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableView;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Window;
 import org.controlsfx.control.action.Action;
@@ -81,7 +82,9 @@ public class WithdrawController extends AbstractController {
 
         clearLists();
 
-        super.show(owner,"Списание картриджей");
+        Image icon = new Image(this.getClass().getResourceAsStream("/images/garbage.png"));
+
+        super.show(owner,"Списание картриджей", icon);
         checkDirect();
 
     }
