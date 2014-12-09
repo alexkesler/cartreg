@@ -1,14 +1,19 @@
 package org.kesler.cartreg.gui.place;
 
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Window;
@@ -28,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 
 @Component
@@ -37,11 +43,13 @@ public class PlaceListController extends AbsractListController<Place> {
 
     @Autowired
     private PlaceService placeService;
-    private ObservableList<Place> observablePlaces;
+    private final ObservableList<Place> observablePlaces = FXCollections.observableArrayList();
+    private FilteredList<Place> filteredPlaces;
 
     @Autowired
     private PlaceController placeController;
 
+    @FXML protected TextField searchTextField;
     @FXML protected ListView<Place> placeListView;
     @FXML protected ProgressIndicator updateProgressIndicator;
 
@@ -55,14 +63,22 @@ public class PlaceListController extends AbsractListController<Place> {
                 return new PlaceListCell();
             }
         });
-        observablePlaces = FXCollections.observableArrayList();
-        placeListView.setItems(observablePlaces);
-
+        filteredPlaces = new FilteredList<Place>(observablePlaces);
+        SortedList<Place> sortedPlaces = new SortedList<Place>(filteredPlaces, new PlaceComparator());
+        placeListView.setItems(sortedPlaces);
+        searchTextField.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                filterPlaces(newValue);
+            }
+        });
     }
 
     @Override
     public void show(Window owner) {
         placeTypes=null;
+        searchTextField.setText("");
+        searchTextField.requestFocus();
         Image icon = new Image(this.getClass().getResourceAsStream("/images/houses.png"));
 
         super.show(owner,"Размещения", icon);
@@ -71,6 +87,8 @@ public class PlaceListController extends AbsractListController<Place> {
     @Override
     public void showAndWait(Window owner) {
         placeTypes=null;
+        searchTextField.setText("");
+        searchTextField.requestFocus();
         Image icon = new Image(this.getClass().getResourceAsStream("/images/houses.png"));
         super.showAndWait(owner,"Размещения", icon);
     }
@@ -78,24 +96,32 @@ public class PlaceListController extends AbsractListController<Place> {
     @Override
     public void showAndWaitSelect(Window owner) {
         placeTypes=null;
+        searchTextField.setText("");
+        searchTextField.requestFocus();
         Image icon = new Image(this.getClass().getResourceAsStream("/images/houses.png"));
         super.showAndWaitSelect(owner, "Выберите размещение", icon);
     }
 
     public void show(Window owner, Place.Type[] placeTypes) {
         this.placeTypes=placeTypes;
+        searchTextField.setText("");
+        searchTextField.requestFocus();
         Image icon = new Image(this.getClass().getResourceAsStream("/images/houses.png"));
         super.show(owner,"Размещения", icon);
     }
 
     public void showAndWait(Window owner, Place.Type[] placeTypes) {
         this.placeTypes=placeTypes;
+        searchTextField.setText("");
+        searchTextField.requestFocus();
         Image icon = new Image(this.getClass().getResourceAsStream("/images/houses.png"));
         super.showAndWait(owner,"Размещения", icon);
     }
 
     public void showAndWaitSelect(Window owner, Place.Type[] placeTypes) {
         this.placeTypes=placeTypes;
+        searchTextField.setText("");
+        searchTextField.requestFocus();
         Image icon = new Image(this.getClass().getResourceAsStream("/images/houses.png"));
         super.showAndWaitSelect(owner, "Выберите размещение", icon);
     }
@@ -239,6 +265,15 @@ public class PlaceListController extends AbsractListController<Place> {
     }
 
 
+    private void filterPlaces(String searchText) {
+        if (searchText==null || searchText.isEmpty()) {
+            filteredPlaces.setPredicate(new EmptyPlacePredicate());
+        } else {
+            filteredPlaces.setPredicate(new NamePlacePredicate(searchText));
+        }
+
+    }
+
     // Вспомогательные классы для списка сотрудников
     class PlaceListCell extends ListCell<Place> {
         @Override
@@ -284,8 +319,6 @@ public class PlaceListController extends AbsractListController<Place> {
             log.debug("Update observablePlaces ...");
             observablePlaces.addAll(places);
 
-            log.debug("Sort observablePlaces ...");
-            observablePlaces.sort(new PlaceComparator());
             log.info("List update complete.");
         }
 
@@ -407,6 +440,28 @@ public class PlaceListController extends AbsractListController<Place> {
                     .title("Ошибка")
                     .message("Ошибка при удалении размещения: " + exception)
                     .showException(exception);
+        }
+    }
+
+    // Классы для поиска
+    class EmptyPlacePredicate implements Predicate<Place> {
+        @Override
+        public boolean test(Place place) {
+            return true;
+        }
+    }
+
+    class NamePlacePredicate implements Predicate<Place> {
+        private String search;
+
+        NamePlacePredicate(String search){
+            this.search = search;
+        }
+        @Override
+        public boolean test(Place place) {
+            if (search==null || search.isEmpty()) return true;
+
+            return place.getName()!=null && place.getName().toLowerCase().contains(search.toLowerCase());
         }
     }
 

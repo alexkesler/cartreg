@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
@@ -8,6 +9,11 @@
 
 <VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="373.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.kesler.cartreg.gui.place.PlaceListController">
    <children>
+      <AnchorPane prefHeight="80.0" prefWidth="373.0">
+         <children>
+            <TextField fx:id="searchTextField" layoutX="14.0" layoutY="8.0" prefHeight="25.0" prefWidth="173.0" promptText="Поиск" />
+         </children>
+      </AnchorPane>
       <ListView fx:id="placeListView" onMouseClicked="#handlePlaceListViewMouseClick" prefHeight="323.0" prefWidth="357.0" VBox.vgrow="ALWAYS">
           <placeholder>
               <javafx.scene.text.Text text="Нет данных" />
@@ -53,7 +59,7 @@
             </ToolBar>
             <ToolBar fx:id="okCancelButtonToolBar" prefHeight="44.0" prefWidth="600.0">
                <items>
-                  <Button mnemonicParsing="false" onAction="#handleOkButtonAction" text="ОК" defaultButton="true"/>
+                  <Button defaultButton="true" mnemonicParsing="false" onAction="#handleOkButtonAction" text="ОК" />
                   <Button mnemonicParsing="false" onAction="#handleCancelButtonAction" text="Отмена" />
                </items>
             </ToolBar>
