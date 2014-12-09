@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableView;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Window;
 import org.controlsfx.dialog.Dialogs;
@@ -62,7 +63,8 @@ public class ArrivalController extends AbstractController {
     @Override
     public void show(Window owner) {
         observableCartSets.clear();
-        super.show(owner, "Поступление картриджей");
+        Image icon = new Image(this.getClass().getResourceAsStream("/images/import1.png"));
+        super.show(owner, "Поступление картриджей", icon);
     }
 
     @FXML

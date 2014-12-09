@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Window;
 import javafx.util.Callback;
@@ -57,20 +58,23 @@ public class CartTypeListController extends AbsractListController<CartType> {
     public void show(Window owner) {
         log.info("Show dialog");
         String title = "Типы картриджей";
-        super.show(owner, title);
+        Image icon = new Image(this.getClass().getResourceAsStream("/images/cubes.png"));
+        super.show(owner, title, icon);
     }
 
     @Override
     public void showAndWait(Window owner) {
         String title = "Типы картриджей";
-        super.showAndWait(owner, title);
+        Image icon = new Image(this.getClass().getResourceAsStream("/images/cubes.png"));
+        super.showAndWait(owner, title, icon);
     }
 
     @Override
     public void showAndWaitSelect(Window owner) {
         log.info("Show select dialog");
         String title = "Выберите тип картриджей";
-        super.showAndWaitSelect(owner, title);
+        Image icon = new Image(this.getClass().getResourceAsStream("/images/cubes.png"));
+        super.showAndWaitSelect(owner, title, icon);
     }
 
     @Override

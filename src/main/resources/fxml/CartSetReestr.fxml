@@ -10,7 +10,6 @@
 
 <VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="543.0" prefWidth="644.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.kesler.cartreg.gui.cartsetreestr.CartSetReestrController">
    <children>
-      <AnchorPane prefHeight="87.0" prefWidth="418.0" />
       <TableView fx:id="cartSetTableView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
           <placeholder>
               <javafx.scene.text.Text text="Нет данных" />

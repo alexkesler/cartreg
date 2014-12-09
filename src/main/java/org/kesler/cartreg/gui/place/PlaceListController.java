@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Window;
 import javafx.util.Callback;
@@ -62,34 +63,41 @@ public class PlaceListController extends AbsractListController<Place> {
     @Override
     public void show(Window owner) {
         placeTypes=null;
-        super.show(owner,"Размещения");
+        Image icon = new Image(this.getClass().getResourceAsStream("/images/houses.png"));
+
+        super.show(owner,"Размещения", icon);
     }
 
     @Override
     public void showAndWait(Window owner) {
         placeTypes=null;
-        super.showAndWait(owner,"Размещения");
+        Image icon = new Image(this.getClass().getResourceAsStream("/images/houses.png"));
+        super.showAndWait(owner,"Размещения", icon);
     }
 
     @Override
     public void showAndWaitSelect(Window owner) {
         placeTypes=null;
-        super.showAndWaitSelect(owner, "Выберите размещение");
+        Image icon = new Image(this.getClass().getResourceAsStream("/images/houses.png"));
+        super.showAndWaitSelect(owner, "Выберите размещение", icon);
     }
 
     public void show(Window owner, Place.Type[] placeTypes) {
         this.placeTypes=placeTypes;
-        super.show(owner,"Размещения");
+        Image icon = new Image(this.getClass().getResourceAsStream("/images/houses.png"));
+        super.show(owner,"Размещения", icon);
     }
 
     public void showAndWait(Window owner, Place.Type[] placeTypes) {
         this.placeTypes=placeTypes;
-        super.showAndWait(owner,"Размещения");
+        Image icon = new Image(this.getClass().getResourceAsStream("/images/houses.png"));
+        super.showAndWait(owner,"Размещения", icon);
     }
 
     public void showAndWaitSelect(Window owner, Place.Type[] placeTypes) {
         this.placeTypes=placeTypes;
-        super.showAndWaitSelect(owner, "Выберите размещение");
+        Image icon = new Image(this.getClass().getResourceAsStream("/images/houses.png"));
+        super.showAndWaitSelect(owner, "Выберите размещение", icon);
     }
 
     @Override

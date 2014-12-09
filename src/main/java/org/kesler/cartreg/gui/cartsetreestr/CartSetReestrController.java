@@ -8,6 +8,7 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableView;
+import javafx.scene.image.Image;
 import javafx.stage.Window;
 import org.controlsfx.dialog.Dialogs;
 import org.kesler.cartreg.domain.CartSet;
@@ -47,7 +48,9 @@ public class CartSetReestrController extends AbstractController {
     @Override
     public void show(Window owner) {
         observableCartSets.clear();
-        super.show(owner, "Реестр картриджей");
+        Image icon = new Image(this.getClass().getResourceAsStream("/images/row_preferences.png"));
+
+        super.show(owner, "Реестр картриджей", icon);
     }
 
     @Override

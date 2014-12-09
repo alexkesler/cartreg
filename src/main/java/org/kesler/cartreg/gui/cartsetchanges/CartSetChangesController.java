@@ -9,6 +9,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.stage.Window;
 import javafx.util.Callback;
 import org.controlsfx.dialog.Dialogs;
@@ -75,7 +76,8 @@ public class CartSetChangesController extends AbstractController {
     @Override
     public void show(Window owner) {
         clearFilters();
-        super.showFullScreen(owner, "Перемещения");
+        Image icon = new Image(this.getClass().getResourceAsStream("/images/history2.png"));
+        super.showFullScreen(owner, "Перемещения", icon);
         updatePlaceComboBoxes();
     }
 
