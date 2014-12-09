@@ -15,27 +15,104 @@
         <menus>
           <Menu mnemonicParsing="false" text="Действия">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#handleConnectMenuItemAction" text="Подключиться" />
-                  <MenuItem mnemonicParsing="false" onAction="#handlePlaceCartSetsMenuItemAction" text="Наличие" />
-                  <MenuItem mnemonicParsing="false" onAction="#handleArrivalMenuItemAction" text="Поступление" />
-                  <MenuItem mnemonicParsing="false" onAction="#handleMoveMenuItemAction" text="Перемещение" />
-                  <MenuItem mnemonicParsing="false" onAction="#handleExchangeMenuItemAction" text="Прием/выдача" />
-                  <MenuItem mnemonicParsing="false" onAction="#handleFilingMenuItemAction" text="Заправка/дефектовка" />
-                  <MenuItem mnemonicParsing="false" onAction="#handleWithdrawMenuItemAction" text="Списание" />
-              <MenuItem mnemonicParsing="false" onAction="#handleCloseMenuItemAction" text="Закрыть" />
+              <MenuItem mnemonicParsing="false" onAction="#handleConnectMenuItemAction" text="Подключиться" visible="false" />
+                  <MenuItem mnemonicParsing="false" onAction="#handlePlaceCartSetsMenuItemAction" text="Наличие">
+                     <graphic>
+                        <ImageView>
+                           <image>
+                              <Image url="@../images/preferences.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#handleArrivalMenuItemAction" text="Поступление">
+                     <graphic>
+                        <ImageView>
+                           <image>
+                              <Image url="@../images/import1.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#handleMoveMenuItemAction" text="Перемещение">
+                     <graphic>
+                        <ImageView>
+                           <image>
+                              <Image url="@../images/transform.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#handleExchangeMenuItemAction" text="Прием/выдача">
+                     <graphic>
+                        <ImageView>
+                           <image>
+                              <Image url="@../images/exchange.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#handleFilingMenuItemAction" text="Заправка/дефектовка">
+                     <graphic>
+                        <ImageView>
+                           <image>
+                              <Image url="@../images/gear_preferences.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#handleWithdrawMenuItemAction" text="Списание">
+                     <graphic>
+                        <ImageView>
+                           <image>
+                              <Image url="@../images/garbage.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></MenuItem>
+              <MenuItem mnemonicParsing="false" onAction="#handleCloseMenuItemAction" text="Закрыть">
+                     <graphic>
+                        <ImageView>
+                           <image>
+                              <Image url="@../images/exit.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></MenuItem>
             </items>
           </Menu>
             <Menu mnemonicParsing="false" text="Отчеты">
               <items>
-                <MenuItem mnemonicParsing="false" onAction="#handleCartSetChangesMenuItemAction" text="Перемещения" />
-                <MenuItem mnemonicParsing="false" onAction="#handleCartSetReestrMenuItemAction" text="Реестр картриджей" />
+                <MenuItem mnemonicParsing="false" onAction="#handleCartSetChangesMenuItemAction" text="Перемещения">
+                     <graphic>
+                        <ImageView>
+                           <image>
+                              <Image url="@../images/history2.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></MenuItem>
+                <MenuItem mnemonicParsing="false" onAction="#handleCartSetReestrMenuItemAction" text="Реестр картриджей">
+                     <graphic>
+                        <ImageView>
+                           <image>
+                              <Image url="@../images/row_preferences.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></MenuItem>
               </items>
             </Menu>
           <Menu fx:id="configMenu" mnemonicParsing="false" text="Настройки">
             <items>
-                  <MenuItem mnemonicParsing="false" onAction="#handleConectionPropMenuItemAction" text="Подключение" />
-                  <MenuItem mnemonicParsing="false" onAction="#handlePlaceListMenuItemAction" text="Филиалы" />
-                  <MenuItem mnemonicParsing="false" onAction="#handleCardTypeListMenuItemAction" text="Типы картриджей" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleConectionPropMenuItemAction" text="Подключение" visible="false" />
+                  <MenuItem mnemonicParsing="false" onAction="#handlePlaceListMenuItemAction" text="Филиалы">
+                     <graphic>
+                        <ImageView>
+                           <image>
+                              <Image url="@../images/houses.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#handleCardTypeListMenuItemAction" text="Типы картриджей">
+                     <graphic>
+                        <ImageView>
+                           <image>
+                              <Image url="@../images/cubes.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></MenuItem>
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Помощь">
