@@ -22,7 +22,7 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
 import org.kesler.cartreg.domain.Place;
-import org.kesler.cartreg.gui.AbsractListController;
+import org.kesler.cartreg.gui.AbstractListController;
 import org.kesler.cartreg.gui.AbstractController;
 import org.kesler.cartreg.service.PlaceService;
 
@@ -37,7 +37,7 @@ import java.util.function.Predicate;
 
 
 @Component
-public class PlaceListController extends AbsractListController<Place> {
+public class PlaceListController extends AbstractListController<Place> {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 

@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 
 public abstract class AbstractController {
-    protected static Logger log = LoggerFactory.getLogger(AbstractController.class);
+    protected final static Logger log = LoggerFactory.getLogger(AbstractController.class);
     @FXML protected Parent root;
     protected Stage stage;
     private Scene scene;
@@ -38,27 +38,23 @@ public abstract class AbstractController {
     public void show(Window owner) {
         log.info("Show view");
         initStage(owner);
-        updateContent();
         result=Result.NONE;
         stage.show();
+        updateContent();
     }
 
     public void show(Window owner, String title) {
         log.info("Show view with title: " + title);
         initStage(owner,title);
         result = Result.NONE;
-        updateContent();
         stage.show();
+        updateContent();
 
     }
 
     public void show(Window owner, String title, Image icon) {
         log.info("Show view with title " + title + " and icon");
-        if (stage==null) {
-            stage = new Stage();
-            stage.initOwner(owner);
-            stage.setScene(new Scene(root));
-        }
+        initStage(owner, title);
         stage.setTitle(title);
         stage.getIcons().clear();
         stage.getIcons().addAll(icon);
@@ -71,18 +67,18 @@ public abstract class AbstractController {
         log.info("Show view maximized");
         initStage(owner);
         stage.setMaximized(true);
-        updateContent();
         result=Result.NONE;
         stage.show();
+        updateContent();
     }
 
     public void showFullScreen(Window owner, String title) {
         log.info("Show view maximized with title: " + title);
-        initStage(owner,title);
+        initStage(owner, title);
         stage.setMaximized(true);
         result = Result.NONE;
-        updateContent();
         stage.show();
+        updateContent();
 
     }
 
@@ -93,8 +89,8 @@ public abstract class AbstractController {
         result = Result.NONE;
         stage.getIcons().clear();
         stage.getIcons().addAll(icon);
-        updateContent();
         stage.show();
+        updateContent();
 
     }
 
