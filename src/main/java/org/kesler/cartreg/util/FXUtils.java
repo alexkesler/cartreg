@@ -1,20 +1,16 @@
 package org.kesler.cartreg.util;
 
-import javafx.application.Platform;
+
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventType;
 import javafx.scene.control.*;
-import org.kesler.cartreg.domain.CartSet;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
