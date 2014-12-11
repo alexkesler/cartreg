@@ -1,6 +1,8 @@
 # The URL from which the client is downloaded
 appbase = http://10.10.0.118/cartreg/
 
+allow_offline = true
+
 # UI Configuration
 ui.name = CartReg
 

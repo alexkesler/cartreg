@@ -123,7 +123,7 @@
             <plugin>
                 <groupId>com.akathist.maven.plugins.launch4j</groupId>
                 <artifactId>launch4j-maven-plugin</artifactId>
-                <version>1.6</version>
+                <version>1.7.1</version>
                 <executions>
                     <execution>
                         <id>l4j-clui</id>
@@ -134,10 +134,11 @@
                         <configuration>
                             <headerType>gui</headerType>
                             <outfile>target/${project.artifactId}.exe</outfile>
-                            <jar>target/getdown.jar</jar>
+                            <jar>target/lib/getdown-1.4.jar</jar>
                             <!--<jar>target/${project.artifactId}-${project.version}.jar</jar>-->
                             <errTitle>${product.title}</errTitle>
                             <icon>src/main/resources/images/Printer.ico</icon>
+                            <cmdLine>./</cmdLine>
                             <splash>
                                 <file>src/main/resources/images/mfc_cartreg.bmp</file>
                                 <waitForWindow>true</waitForWindow>
@@ -152,7 +153,7 @@
                             <jre>
                                 <path>jre8</path>
                                 <!--<minVersion>1.8.0</minVersion> -->
-                                <maxHeapSize>256</maxHeapSize>
+                                <!--<maxHeapSize>256</maxHeapSize>-->
                             </jre>
                             <versionInfo>
                                 <fileVersion>${project.version}</fileVersion>
