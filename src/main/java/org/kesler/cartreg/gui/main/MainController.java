@@ -166,7 +166,7 @@ public class MainController extends AbstractController{
 
     private void showExchangeDialog() {
         log.info("Shove ExchangeDialog");
-        Place.Type[] placeTypes = {Place.Type.BRANCH};
+        Place.Type[] placeTypes = {Place.Type.DIRECT,Place.Type.BRANCH};
         placeListController.showAndWaitSelect(stage, placeTypes);
         if(placeListController.getResult()== AbstractController.Result.OK) {
             Place place = placeListController.getSelectedItem();

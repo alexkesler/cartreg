@@ -15,7 +15,7 @@ import javafx.stage.Window;
 import javafx.util.Callback;
 import org.controlsfx.dialog.Dialogs;
 import org.kesler.cartreg.domain.CartType;
-import org.kesler.cartreg.gui.AbsractListController;
+import org.kesler.cartreg.gui.AbstractListController;
 import org.kesler.cartreg.service.CartTypeService;
 import org.kesler.cartreg.util.FXUtils;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ import java.util.Collection;
  * Контроллер для управления списком типов картриджей
  */
 @Component
-public class CartTypeListController extends AbsractListController<CartType> {
+public class CartTypeListController extends AbstractListController<CartType> {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @FXML protected ListView<CartType> cartTypeListView;

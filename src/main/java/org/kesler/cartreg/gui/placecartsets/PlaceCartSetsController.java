@@ -15,7 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Window;
 import org.controlsfx.dialog.Dialogs;
 import org.kesler.cartreg.domain.*;
-import org.kesler.cartreg.gui.AbsractListController;
+import org.kesler.cartreg.gui.AbstractListController;
 import org.kesler.cartreg.gui.cartset.CartSetController;
 import org.kesler.cartreg.gui.cartsetreestr.CartSetComparator;
 import org.kesler.cartreg.service.CartSetService;
@@ -30,7 +30,7 @@ import java.util.*;
  * Контроллер окна наличия картриджей
  */
 @Component
-public class PlaceCartSetsController extends AbsractListController<CartSet> {
+public class PlaceCartSetsController extends AbstractListController<CartSet> {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @FXML protected Label placeLabel;
@@ -56,6 +56,7 @@ public class PlaceCartSetsController extends AbsractListController<CartSet> {
     }
 
     public void show(Window owner, Place place) {
+        log.info("Show for place " + place.getCommonName());
         this.place = place;
         statuses = null;
         Image icon = new Image(this.getClass().getResourceAsStream("/images/preferences.png"));
@@ -64,6 +65,7 @@ public class PlaceCartSetsController extends AbsractListController<CartSet> {
     }
 
     public void showAndWaitSelect(Window owner, Place place) {
+        log.info("Show and wait select for place " + place.getCommonName());
         this.place = place;
         statuses = null;
         Image icon = new Image(this.getClass().getResourceAsStream("/images/preferences.png"));
@@ -72,6 +74,7 @@ public class PlaceCartSetsController extends AbsractListController<CartSet> {
     }
 
     public void showAndWaitSelect(Window owner, Place place, CartStatus[] statuses) {
+        log.info("Show and wait select for place " + place.getCommonName() + " and statuses " + Arrays.deepToString(statuses));
         this.place = place;
         this.statuses = statuses;
         Image icon = new Image(this.getClass().getResourceAsStream("/images/preferences.png"));
