@@ -18,6 +18,8 @@ import org.kesler.cartreg.gui.placecartsets.PlaceCartSetsController;
 import org.kesler.cartreg.gui.util.QuantityController;
 
 import org.kesler.cartreg.gui.withdraw.WithdrawController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -43,7 +45,7 @@ import java.io.IOException;
 @Configuration
 @Import(CartRegAppServiceFactory.class)
 public class CartRegAppFactory {
-
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     /**
      * Factory method for creating a RestTemplate, which is a Spring helper class that simplifies making Rest calls onto
@@ -55,77 +57,92 @@ public class CartRegAppFactory {
 
     @Bean
     public MainController mainController() {
+        log.info("Load MainController");
         MainController mainController = loadController("/fxml/Main.fxml");
         return mainController;
     }
 
     @Bean
-    public PlaceController branchController() {
+    public PlaceController placeController() {
+        log.info("Load PlaceController");
         return loadController("/fxml/Place.fxml");
     }
 
     @Bean
     public PlaceListController branchListController() {
+        log.info("Load PlaceListController");
         return loadController("/fxml/PlaceList.fxml");
     }
 
     @Bean
     public CartTypeListController cartTypeListController() {
+        log.info("Load CartTypeListController");
         return loadController("/fxml/CartTypeList.fxml");
     }
 
     @Bean
     public CartTypeController cartTypeController() {
+        log.info("Load CartTypeController");
         return loadController("/fxml/CartType.fxml");
     }
 
     @Bean
     public ArrivalController arrivalController() {
+        log.info("Load ArrivalController");
         return loadController("/fxml/Arrival.fxml");
     }
 
     @Bean
     public MoveController moveController() {
+        log.info("Load MoveController");
         return loadController("/fxml/Move.fxml");
     }
 
     @Bean
     public CartSetController cartSetController() {
+        log.info("Load CartSetController");
         return loadController("/fxml/CartSet.fxml");
     }
 
     @Bean
     public PlaceCartSetsController placeCartSetsController() {
+        log.info("Load PlaceCartSetsController");
         return loadController("/fxml/PlaceCartSets.fxml");
     }
 
     @Bean
     public ExchangeController exchangeController() {
+        log.info("Load ExchangeController");
         return loadController("/fxml/Exchange.fxml");
     }
 
     @Bean
     public FillingController fillingController() {
+        log.info("Load FillingController");
         return loadController("/fxml/Filling.fxml");
     }
 
     @Bean
     public QuantityController quantityController() {
+        log.info("Load QuantityController");
         return loadController("/fxml/Quantity.fxml");
     }
 
     @Bean
     public CartSetChangesController cartSetChangesController() {
+        log.info("Load CartSetChangesController");
         return loadController("/fxml/CartSetChanges.fxml");
     }
 
     @Bean
     public CartSetReestrController cartSetReestrController() {
+        log.info("Load CartSetReestrController");
         return loadController("/fxml/CartSetReestr.fxml");
     }
 
     @Bean
     public WithdrawController withdrawController() {
+        log.info("Load WithdrawController");
         return loadController("/fxml/Withdraw.fxml");
     }
 
