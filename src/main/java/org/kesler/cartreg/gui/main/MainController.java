@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 import org.kesler.cartreg.domain.CartSet;
 import org.kesler.cartreg.domain.Place;
 import org.kesler.cartreg.gui.AbstractController;
+import org.kesler.cartreg.gui.about.AboutController;
 import org.kesler.cartreg.gui.arrival.ArrivalController;
 import org.kesler.cartreg.gui.cartsetchanges.CartSetChangesController;
 import org.kesler.cartreg.gui.cartsetreestr.CartSetReestrController;
@@ -77,6 +78,9 @@ public class MainController extends AbstractController{
     @Autowired
     private CartSetService cartSetService;
 
+    @Autowired
+    private AboutController aboutController;
+
 
     public void setStage(Stage stage) {
         this.stage = stage;
@@ -135,6 +139,9 @@ public class MainController extends AbstractController{
 
     @FXML protected void handleCardTypeListMenuItemAction(ActionEvent ev) {
         showCartTypeListDialog();
+    }
+    @FXML protected void handleAboutMenuItemAction(ActionEvent ev) {
+        showAboutDialog();
     }
 
     @FXML protected void handleReloadButtonAction(ActionEvent ev) {
@@ -209,6 +216,11 @@ public class MainController extends AbstractController{
     private void showCartSetReestrDialog() {
         log.info("Show CartSetReestrDialog");
         cartSetReestrController.show(stage);
+    }
+
+    private void showAboutDialog() {
+        log.info("Show AboutDialog");
+        aboutController.show(stage);
     }
 
     private void reloadTree() {

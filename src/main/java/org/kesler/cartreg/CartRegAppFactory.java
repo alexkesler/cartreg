@@ -2,6 +2,7 @@ package org.kesler.cartreg;
 
 import javafx.fxml.FXMLLoader;
 
+import org.kesler.cartreg.gui.about.AboutController;
 import org.kesler.cartreg.gui.arrival.ArrivalController;
 import org.kesler.cartreg.gui.cartsetchanges.CartSetChangesController;
 import org.kesler.cartreg.gui.cartsetreestr.CartSetReestrController;
@@ -144,6 +145,12 @@ public class CartRegAppFactory {
     public WithdrawController withdrawController() {
         log.info("Load WithdrawController");
         return loadController("/fxml/Withdraw.fxml");
+    }
+
+    @Bean
+    public AboutController aboutController() {
+        log.info("Load AboutController");
+        return loadController("/fxml/About.fxml");
     }
 
     /**
