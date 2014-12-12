@@ -7,7 +7,7 @@ allow_offline = true
 ui.name = CartReg
 
 # Application jar files
-code = CartReg-0.1.0.0.jar
+code = CartReg.jar
 code = lib/antlr-2.7.7.jar
 code = lib/aopalliance-1.0.jar
 code = lib/asm-3.1.jar
@@ -46,6 +46,8 @@ code = lib/spring-jdbc-4.1.2.RELEASE.jar
 code = lib/spring-orm-4.1.2.RELEASE.jar
 code = lib/spring-tx-4.1.2.RELEASE.jar
 code = lib/xml-apis-1.0.b2.jar
+
+resource = CartReg.exe
 
 
 # The main entry point for the application
