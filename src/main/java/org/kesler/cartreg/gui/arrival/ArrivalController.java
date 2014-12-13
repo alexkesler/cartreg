@@ -188,7 +188,7 @@ public class ArrivalController extends AbstractController {
             for(CartSet cartSet:observableCartSets) {
 
                 log.info("Adding CartSet: "
-                        + cartSet.getModel()
+                        + cartSet.getTypeString()
                         + " (" + cartSet.getStatusDesc() + ") - "
                         + cartSet.getQuantity());
                 cartSetService.addCartSet(cartSet);

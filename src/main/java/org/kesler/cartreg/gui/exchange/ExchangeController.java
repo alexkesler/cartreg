@@ -166,7 +166,7 @@ public class ExchangeController extends AbstractController {
                 toFromCartSets.put(moveCartSet, sourceCartSet);
                 observableInCartSets.addAll(moveCartSet);
                 log.info("Adding In CartSet: "
-                        + moveCartSet.getModel()
+                        + moveCartSet.getTypeString()
                         + " (" + moveCartSet.getStatusDesc() + ") - "
                         + moveCartSet.getQuantity() + " complete");
             }
@@ -185,7 +185,7 @@ public class ExchangeController extends AbstractController {
                 selectedSourceCartSet.setQuantity(initialSourceQuantity-quantityController.getQuantity());
                 updateContent();
                 log.info("Editing In CartSet: "
-                        + selectedMoveCartSet.getModel()
+                        + selectedMoveCartSet.getTypeString()
                         + " (" + selectedMoveCartSet.getStatusDesc() + ") - "
                         + selectedMoveCartSet.getQuantity() + " complete");
             }
@@ -201,7 +201,7 @@ public class ExchangeController extends AbstractController {
             toFromCartSets.remove(selectedMoveCartSet);
             observableInCartSets.removeAll(selectedMoveCartSet);
             log.info("Removing In CartSet: "
-                    + selectedMoveCartSet.getModel()
+                    + selectedMoveCartSet.getTypeString()
                     + " (" + selectedMoveCartSet.getStatusDesc() + ") - "
                     + selectedMoveCartSet.getQuantity() + " complete");
 
@@ -236,7 +236,7 @@ public class ExchangeController extends AbstractController {
                 toFromCartSets.put(moveCartSet, sourceCartSet);
                 observableOutCartSets.addAll(moveCartSet);
                 log.info("Adding Out CartSet: "
-                        + moveCartSet.getModel()
+                        + moveCartSet.getTypeString()
                         + " (" + moveCartSet.getStatusDesc() + ") - "
                         + moveCartSet.getQuantity() + " complete");
             }
@@ -255,7 +255,7 @@ public class ExchangeController extends AbstractController {
                 selectedSourceCartSet.setQuantity(initialSourceQuantity-quantityController.getQuantity());
                 updateContent();
                 log.info("Editing Out CartSet: "
-                        + selectedMoveCartSet.getModel()
+                        + selectedMoveCartSet.getTypeString()
                         + " (" + selectedMoveCartSet.getStatusDesc() + ") - "
                         + selectedMoveCartSet.getQuantity() + " complete");
             }
@@ -271,7 +271,7 @@ public class ExchangeController extends AbstractController {
             toFromCartSets.remove(selectedMoveCartSet);
             observableOutCartSets.removeAll(selectedMoveCartSet);
             log.info("Removing Out CartSet: "
-                    + selectedMoveCartSet.getModel()
+                    + selectedMoveCartSet.getTypeString()
                     + " (" + selectedMoveCartSet.getStatusDesc() + ") - "
                     + selectedMoveCartSet.getQuantity() + " complete");
         }
@@ -285,11 +285,11 @@ public class ExchangeController extends AbstractController {
         log.info("Handle OK action");
         String message = "Переместить картриджи?";
         for (CartSet cartSet: observableInCartSets) {
-            message += "\n" + cartSet.getModel() +" (" + cartSet.getStatusDesc() + ") - " + cartSet.getQuantity()
+            message += "\n" + cartSet.getTypeString() +" (" + cartSet.getStatusDesc() + ") - " + cartSet.getQuantity()
             + " - > " + direct.getName();
         }
         for (CartSet cartSet: observableOutCartSets) {
-            message += "\n" + cartSet.getModel() +" (" + cartSet.getStatusDesc() + ") - " + cartSet.getQuantity()
+            message += "\n" + cartSet.getTypeString() +" (" + cartSet.getStatusDesc() + ") - " + cartSet.getQuantity()
             + " - > " + branch.getName();
         }
 
@@ -425,7 +425,7 @@ public class ExchangeController extends AbstractController {
             for (CartSet moveCartSet:observableInCartSets) {
 
                 log.info("Adding In move CartSet: "
-                        + moveCartSet.getModel()
+                        + moveCartSet.getTypeString()
                         + " (" + moveCartSet.getStatusDesc() + ") - "
                         + moveCartSet.getQuantity());
                 cartSetService.addCartSet(moveCartSet);
@@ -434,7 +434,7 @@ public class ExchangeController extends AbstractController {
                 CartSet sourceCartSet = toFromCartSets.get(moveCartSet);
 
                 log.info("Updating In source CartSet: "
-                        + sourceCartSet.getModel()
+                        + sourceCartSet.getTypeString()
                         + " (" + sourceCartSet.getStatusDesc() + ") - "
                         + sourceCartSet.getQuantity());
                 cartSetService.updateCartSet(sourceCartSet);
@@ -448,7 +448,7 @@ public class ExchangeController extends AbstractController {
             for (CartSet moveCartSet:observableOutCartSets) {
 
                 log.info("Adding Out move CartSet: "
-                        + moveCartSet.getModel()
+                        + moveCartSet.getTypeString()
                         + " (" + moveCartSet.getStatusDesc() + ") - "
                         + moveCartSet.getQuantity());
                 cartSetService.addCartSet(moveCartSet);
@@ -457,7 +457,7 @@ public class ExchangeController extends AbstractController {
                 CartSet sourceCartSet = toFromCartSets.get(moveCartSet);
 
                 log.info("Updating Out source CartSet: "
-                        + sourceCartSet.getModel()
+                        + sourceCartSet.getTypeString()
                         + " (" + sourceCartSet.getStatusDesc() + ") - "
                         + sourceCartSet.getQuantity());
                 cartSetService.updateCartSet(sourceCartSet);

@@ -6,18 +6,18 @@ import org.kesler.cartreg.gui.place.PlaceComparator;
 
 import java.util.Comparator;
 
-/**
- * Created by alex on 27.11.14.
- */
 public class CartSetComparator implements Comparator<CartSet> {
     @Override
     public int compare(CartSet o1, CartSet o2) {
         int placeCompare = new PlaceComparator().compare(o1.getPlace(),o2.getPlace());
+        int statusCompare = (o1.getStatus()==o2.getStatus())?0:
+                (o1.getStatus()==CartStatus.NONE && o2.getStatus()!=CartStatus.NONE)?1:
+                        Integer.signum(o1.getStatus().ordinal()-o2.getStatus().ordinal());
+        int typeStringCompare = o1.getTypeString().compareTo(o2.getTypeString());
 
-        if (o1.getStatus()==o2.getStatus()) return placeCompare;
-        if (o1.getStatus()==CartStatus.NONE && o2.getStatus()!=CartStatus.NONE) return 1 + placeCompare*10;
 
 
-        return Integer.signum(o1.getStatus().ordinal()-o2.getStatus().ordinal()) + placeCompare*10;
+
+        return placeCompare*100 + statusCompare*10 + typeStringCompare;
     }
 }

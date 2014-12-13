@@ -153,7 +153,7 @@ public class WithdrawController extends AbstractController {
         String message = "Списать картриджи?";
         message += "\n Списано:";
         for (CartSet cartSet: observableWithdrawCartSets) {
-            message += "\n" + cartSet.getModel() +" (" + cartSet.getStatusDesc() + ") - " + cartSet.getQuantity() + " шт";
+            message += "\n" + cartSet.getTypeString() +" (" + cartSet.getStatusDesc() + ") - " + cartSet.getQuantity() + " шт";
         }
 
         Action response = Dialogs.create()

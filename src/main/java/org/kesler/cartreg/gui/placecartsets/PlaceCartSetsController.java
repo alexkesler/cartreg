@@ -64,6 +64,15 @@ public class PlaceCartSetsController extends AbstractListController<CartSet> {
         super.show(owner, "Наличие картриджей", icon);
     }
 
+    public void showAndWait(Window owner, Place place) {
+        log.info("Show for place " + place.getCommonName());
+        this.place = place;
+        statuses = null;
+        Image icon = new Image(this.getClass().getResourceAsStream("/images/preferences.png"));
+
+        super.showAndWait(owner, "Наличие картриджей", icon);
+    }
+
     public void showAndWaitSelect(Window owner, Place place) {
         log.info("Show and wait select for place " + place.getCommonName());
         this.place = place;

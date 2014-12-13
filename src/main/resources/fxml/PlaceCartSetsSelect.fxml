@@ -9,17 +9,36 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 
-<VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="518.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.kesler.cartreg.gui.placecartsets.PlaceCartSetsController">
+<?import org.kesler.cartreg.util.factories.CheckBoxCellFactory?>
+
+<VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="518.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.kesler.cartreg.gui.placecartsetsselect.PlaceCartSetsSelectController">
    <children>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
          <children>
             <Label layoutX="18.0" layoutY="20.0" text="Размещение:" AnchorPane.leftAnchor="18.0" AnchorPane.topAnchor="20.0" />
-            <TableView fx:id="cartSetsTableView" layoutX="18.0" layoutY="53.0" onMouseClicked="#handleCartSetsTableViewMouseClick" prefHeight="261.0" prefWidth="567.0" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="18.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="53.0">
+            <TableView fx:id="cartSetsTableView"
+                       editable="true" layoutX="18.0"
+                       layoutY="53.0"
+                       prefHeight="261.0"
+                       prefWidth="567.0"
+                       AnchorPane.bottomAnchor="2.0"
+                       AnchorPane.leftAnchor="18.0"
+                       AnchorPane.rightAnchor="15.0"
+                       AnchorPane.topAnchor="53.0"
+                        onMouseClicked="#handleCartSetsTableViewMouseClick">
                 <placeholder>
                     <javafx.scene.text.Text text="Нет данных" />
                 </placeholder>
                 <columns>
-                <TableColumn maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="230.0" text="Модель">
+                  <TableColumn editable="true" minWidth="50" prefWidth="50.0" text="Выбр">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="checked" />
+                    </cellValueFactory>
+                      <cellFactory>
+                          <CheckBoxCellFactory />
+                      </cellFactory>
+                  </TableColumn>
+                <TableColumn maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="255.0" text="Модель">
                     <cellValueFactory>
                         <PropertyValueFactory property="typeString" />
                     </cellValueFactory>
@@ -32,7 +51,7 @@
                 </TableColumn>
                   <TableColumn maxWidth="70.0" minWidth="70.0" prefWidth="70.0" text="Кол-во">
                       <cellValueFactory>
-                          <PropertyValueFactory property="quantity" />
+                          <PropertyValueFactory property="checkedQuantityString" />
                       </cellValueFactory>
                   </TableColumn>
               </columns>
@@ -40,59 +59,32 @@
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                </columnResizePolicy>
             </TableView>
-            <Label fx:id="placeLabel" layoutX="111.0" layoutY="20.0" prefHeight="16.0" prefWidth="389.0" text="Label" AnchorPane.leftAnchor="111.0" AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="20.0">
+            <Label fx:id="placeLabel" layoutX="111.0" layoutY="20.0" prefHeight="16.0" prefWidth="350.0" text="Label" AnchorPane.leftAnchor="111.0" AnchorPane.rightAnchor="57.0" AnchorPane.topAnchor="20.0">
                <font>
                   <Font name="System Bold" size="13.0" />
                </font>
             </Label>
+            <Button layoutX="466.0" layoutY="15.0" mnemonicParsing="false" onAction="#handlePlaceCartSetsButtonAction" AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="15.0">
+               <graphic>
+                  <ImageView>
+                     <image>
+                        <Image url="@../images/book_next.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+                <tooltip>
+                    <Tooltip text="Наличие картриджей" />
+                </tooltip>
+            </Button>
          </children>
       </AnchorPane>
-      <ToolBar prefHeight="40.0" prefWidth="200.0">
-         <items>
-            <Button mnemonicParsing="false" onAction="#handleAddButtonAction">
-               <graphic>
-                  <ImageView>
-                     <image>
-                        <Image url="@../images/add.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
-            <Button mnemonicParsing="false" onAction="#handleEditButtonAction">
-               <graphic>
-                  <ImageView>
-                     <image>
-                        <Image url="@../images/pencil.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
-            <Button mnemonicParsing="false" onAction="#handleRemoveButtonAction">
-               <graphic>
-                  <ImageView>
-                     <image>
-                        <Image url="@../images/delete.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
-            <ProgressIndicator fx:id="updateProgressIndicator" prefHeight="16.0" prefWidth="27.0" visible="false" />
-         </items>
-         <padding>
-            <Insets left="18.0" />
-         </padding>
-      </ToolBar>
       <StackPane prefHeight="42.0" prefWidth="518.0">
          <children>
             <ToolBar fx:id="okCancelButtonToolBar" prefHeight="44.0" prefWidth="600.0">
                <items>
                   <Button defaultButton="true" mnemonicParsing="false" onAction="#handleOkButtonAction" text="ОК" />
                   <Button mnemonicParsing="false" onAction="#handleCancelButtonAction" text="Отмена" />
-               </items>
-            </ToolBar>
-            <ToolBar fx:id="closeButtonToolBar" prefHeight="40.0" prefWidth="200.0">
-               <items>
-                  <Button mnemonicParsing="false" onAction="#handleCloseButtonAction" text="Закрыть" />
+                   <ProgressIndicator fx:id="updateProgressIndicator" prefHeight="16.0" prefWidth="27.0" visible="false" />
                </items>
             </ToolBar>
          </children>

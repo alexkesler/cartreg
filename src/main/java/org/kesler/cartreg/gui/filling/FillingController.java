@@ -173,12 +173,12 @@ public class FillingController extends AbstractController {
         String message = "Заправить картриджи?";
         message += "\n Заправлено:";
         for (CartSet cartSet: observableFilledCartSets) {
-            message += "\n" + cartSet.getModel() +" (" + cartSet.getStatusDesc() + ") - " + cartSet.getQuantity() + " шт";
+            message += "\n" + cartSet.getTypeString() +" (" + cartSet.getStatusDesc() + ") - " + cartSet.getQuantity() + " шт";
         }
         message += "\n Неисправно:";
 
         for (CartSet cartSet: observableDefectCartSet) {
-            message += "\n" + cartSet.getModel() +" (" + cartSet.getStatusDesc() + ") - " + cartSet.getQuantity() + " шт";
+            message += "\n" + cartSet.getTypeString() +" (" + cartSet.getStatusDesc() + ") - " + cartSet.getQuantity() + " шт";
         }
 
 
@@ -511,7 +511,7 @@ public class FillingController extends AbstractController {
             for (CartSet filledCartSet:observableFilledCartSets) {
 
                 log.info("Adding filled CartSet: "
-                        + filledCartSet.getModel()
+                        + filledCartSet.getTypeString()
                         + " (" + filledCartSet.getStatusDesc() + ") - "
                         + filledCartSet.getQuantity());
                 cartSetService.addCartSet(filledCartSet);
@@ -523,7 +523,7 @@ public class FillingController extends AbstractController {
             // сохраняем отправленные наборы
             for (CartSet defectCartSet:observableDefectCartSet) {
                 log.info("Adding defect CartSet: "
-                        + defectCartSet.getModel()
+                        + defectCartSet.getTypeString()
                         + " (" + defectCartSet.getStatusDesc() + ") - "
                         + defectCartSet.getQuantity());
                 cartSetService.addCartSet(defectCartSet);
@@ -538,7 +538,7 @@ public class FillingController extends AbstractController {
 
             for (CartSet sourceCartSet: observableEmptyCartSets) {
                 log.info("Updating source CartSet: "
-                        + sourceCartSet.getModel()
+                        + sourceCartSet.getTypeString()
                         + " (" + sourceCartSet.getStatusDesc() + ") - "
                         + sourceCartSet.getQuantity());
                 cartSetService.updateCartSet(sourceCartSet);

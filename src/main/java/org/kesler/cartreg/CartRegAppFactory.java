@@ -16,6 +16,7 @@ import org.kesler.cartreg.gui.carttype.CartTypeListController;
 import org.kesler.cartreg.gui.main.MainController;
 import org.kesler.cartreg.gui.exchange.ExchangeController;
 import org.kesler.cartreg.gui.placecartsets.PlaceCartSetsController;
+import org.kesler.cartreg.gui.placecartsetsselect.PlaceCartSetsSelectController;
 import org.kesler.cartreg.gui.util.QuantityController;
 
 import org.kesler.cartreg.gui.withdraw.WithdrawController;
@@ -109,6 +110,12 @@ public class CartRegAppFactory {
     public PlaceCartSetsController placeCartSetsController() {
         log.info("Load PlaceCartSetsController");
         return loadController("/fxml/PlaceCartSets.fxml");
+    }
+
+    @Bean
+    public PlaceCartSetsSelectController placeCartSetsSelectController() {
+        log.info("Load PlaceCartSetsSelectController");
+        return loadController("/fxml/PlaceCartSetsSelect.fxml");
     }
 
     @Bean

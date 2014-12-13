@@ -319,7 +319,7 @@ public class MainController extends AbstractController{
 
         @Override
         public String toString() {
-            return cartSet.getModel() + " (" + cartSet.getStatusDesc() + ") - " + cartSet.getQuantity();
+            return cartSet.getTypeString() + " (" + cartSet.getStatusDesc() + ") - " + cartSet.getQuantity();
         }
     }
 
