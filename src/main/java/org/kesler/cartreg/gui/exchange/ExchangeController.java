@@ -3,6 +3,7 @@ package org.kesler.cartreg.gui.exchange;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,8 +18,10 @@ import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
 import org.kesler.cartreg.domain.*;
 import org.kesler.cartreg.gui.AbstractController;
+import org.kesler.cartreg.gui.cartsetreestr.CartSetComparator;
 import org.kesler.cartreg.gui.place.PlaceListController;
 import org.kesler.cartreg.gui.placecartsets.PlaceCartSetsController;
+import org.kesler.cartreg.gui.placecartsetsselect.PlaceCartSetsSelectController;
 import org.kesler.cartreg.gui.util.QuantityController;
 import org.kesler.cartreg.service.CartSetChangeService;
 import org.kesler.cartreg.service.CartSetService;
@@ -56,7 +59,7 @@ public class ExchangeController extends AbstractController {
     private PlaceListController placeListController;
 
     @Autowired
-    private PlaceCartSetsController placeCartSetsController;
+    private PlaceCartSetsSelectController placeCartSetsSelectController;
 
     @Autowired
     private QuantityController quantityController;
@@ -68,20 +71,21 @@ public class ExchangeController extends AbstractController {
     private final ObservableList<CartSet> observableInCartSets = FXCollections.observableArrayList();
     private final ObservableList<CartSet> observableOutCartSets = FXCollections.observableArrayList();
 
-    private Map<CartSet,CartSet> toFromCartSets = new HashMap<CartSet, CartSet>();
+    private Map<CartSet,CartSet> toFromInCartSets = new HashMap<CartSet, CartSet>();
+    private Map<CartSet,CartSet> toFromOutCartSets = new HashMap<CartSet, CartSet>();
 
     @FXML
     protected void initialize() {
-        inCartSetsTableView.setItems(observableInCartSets);
-        outCartSetsTableView.setItems(observableOutCartSets);
+        SortedList<CartSet> sortedInCartSets = new SortedList<CartSet>(observableInCartSets, new CartSetComparator());
+        inCartSetsTableView.setItems(sortedInCartSets);
+        SortedList<CartSet> sortedOutCartSets = new SortedList<CartSet>(observableOutCartSets, new CartSetComparator());
+        outCartSetsTableView.setItems(sortedOutCartSets);
     }
 
     public void show(Window owner, Place place) {
         this.branch = place;
         checkDirect();
-        observableInCartSets.clear();
-        observableOutCartSets.clear();
-        toFromCartSets.clear();
+        clearLists();
         Image icon = new Image(this.getClass().getResourceAsStream("/images/exchange.png"));
 
         super.show(owner, "Прием/выдача", icon);
@@ -140,49 +144,32 @@ public class ExchangeController extends AbstractController {
 
     private void addInCartSet() {
         log.info("Add In CartSet");
-        placeCartSetsController.showAndWaitSelect(stage, branch);
-        if (placeCartSetsController.getResult()==Result.OK) {
-            CartSet sourceCartSet = placeCartSetsController.getSelectedItem();
-            // Проверяем, если выбран уже существующий источник - редактируем существующую запись
-            for (Map.Entry<CartSet,CartSet> toFromEntry:toFromCartSets.entrySet()) {
-                if (toFromEntry.getValue().equals(sourceCartSet)) {
-                    inCartSetsTableView.getSelectionModel().select(observableInCartSets.indexOf(toFromEntry.getKey()));
-                    editInCartSet();
-                    return;
-                }
+        placeCartSetsSelectController.showAndWait(stage, branch, toFromInCartSets);
+        if (placeCartSetsSelectController.getResult()==Result.OK) {
+            toFromInCartSets.clear();
+            toFromInCartSets.putAll(placeCartSetsSelectController.getSelectedToSourceCartSetsMap());
+            /// Назначаем прибывшим место размещения и статус
+            for (CartSet cartSet:toFromInCartSets.keySet()) {
+                cartSet.setPlace(direct);
+                cartSet.setStatus(CartStatus.EMPTY);
             }
-            CartSet moveCartSet = sourceCartSet.copyCartSet();
-            Integer moveQuantity = 4;
-            Integer sourceQuantity = sourceCartSet.getQuantity();
-            quantityController.showAndWait(stage, moveQuantity, sourceQuantity);
-            if (quantityController.getResult()==Result.OK) {
-                moveQuantity = quantityController.getQuantity();
-                moveCartSet.setQuantity(moveQuantity);
-                moveCartSet.setPlace(direct);
-                moveCartSet.setStatus(CartStatus.EMPTY);
+            observableInCartSets.clear();
+            observableInCartSets.addAll(toFromInCartSets.keySet());
 
-                sourceCartSet.setQuantity(sourceQuantity-moveQuantity);
-                // запоминаем куда и откуда перемещаем
-                toFromCartSets.put(moveCartSet, sourceCartSet);
-                observableInCartSets.addAll(moveCartSet);
-                log.info("Adding In CartSet: "
-                        + moveCartSet.getTypeString()
-                        + " (" + moveCartSet.getStatusDesc() + ") - "
-                        + moveCartSet.getQuantity() + " complete");
-            }
+            log.info("Adding In CartSets complete");
         }
+        log.info("Adding In CartSets canceled");
     }
 
     private void editInCartSet() {
         log.info("Edit In CartSet");
         CartSet selectedMoveCartSet = inCartSetsTableView.getSelectionModel().getSelectedItem();
         if (selectedMoveCartSet!=null) {
-            CartSet selectedSourceCartSet = toFromCartSets.get(selectedMoveCartSet);
-            Integer initialSourceQuantity = selectedSourceCartSet.getQuantity()+selectedMoveCartSet.getQuantity();
-            quantityController.showAndWait(stage,selectedMoveCartSet.getQuantity(),initialSourceQuantity);
+            CartSet selectedSourceCartSet = toFromInCartSets.get(selectedMoveCartSet);
+            Integer sourceQuantity = selectedSourceCartSet.getQuantity();
+            quantityController.showAndWait(stage,selectedMoveCartSet.getQuantity(),sourceQuantity);
             if (quantityController.getResult()==Result.OK) {
                 selectedMoveCartSet.setQuantity(quantityController.getQuantity());
-                selectedSourceCartSet.setQuantity(initialSourceQuantity-quantityController.getQuantity());
                 updateContent();
                 log.info("Editing In CartSet: "
                         + selectedMoveCartSet.getTypeString()
@@ -196,9 +183,7 @@ public class ExchangeController extends AbstractController {
         log.info("Remove In CartSet");
         CartSet selectedMoveCartSet = inCartSetsTableView.getSelectionModel().getSelectedItem();
         if (selectedMoveCartSet!=null) {
-            CartSet selectedSourceCartSet = toFromCartSets.get(selectedMoveCartSet);
-            selectedSourceCartSet.setQuantity(selectedSourceCartSet.getQuantity()+selectedMoveCartSet.getQuantity());
-            toFromCartSets.remove(selectedMoveCartSet);
+            toFromInCartSets.remove(selectedMoveCartSet);
             observableInCartSets.removeAll(selectedMoveCartSet);
             log.info("Removing In CartSet: "
                     + selectedMoveCartSet.getTypeString()
@@ -211,48 +196,31 @@ public class ExchangeController extends AbstractController {
     private void addOutCartSet() {
         log.info("Add Out CartSet");
         CartStatus[] statuses = {CartStatus.NEW,CartStatus.FILLED};
-        placeCartSetsController.showAndWaitSelect(stage, direct,statuses);
-        if (placeCartSetsController.getResult()==Result.OK) {
-            CartSet sourceCartSet = placeCartSetsController.getSelectedItem();
-            // Проверяем, если выбран уже существующий источник - редактируем существующую запись
-            for (Map.Entry<CartSet,CartSet> toFromEntry:toFromCartSets.entrySet()) {
-                if (toFromEntry.getValue().equals(sourceCartSet)) {
-                    outCartSetsTableView.getSelectionModel().select(observableOutCartSets.indexOf(toFromEntry.getKey()));
-                    editOutCartSet();
-                    return;
-                }
+        placeCartSetsSelectController.showAndWait(stage, direct,statuses,toFromOutCartSets);
+        if (placeCartSetsSelectController.getResult()==Result.OK) {
+            toFromOutCartSets.clear();
+            toFromOutCartSets.putAll(placeCartSetsSelectController.getSelectedToSourceCartSetsMap());
+            for (CartSet cartSet : toFromOutCartSets.keySet()) {
+                cartSet.setPlace(branch);
+                cartSet.setStatus(CartStatus.INSTALLED);
             }
-            CartSet moveCartSet = sourceCartSet.copyCartSet();
-            Integer moveQuantity = 4;
-            Integer sourceQuantity = sourceCartSet.getQuantity();
-            quantityController.showAndWait(stage, moveQuantity, sourceQuantity);
-            if (quantityController.getResult()==Result.OK) {
-                moveQuantity = quantityController.getQuantity();
-                moveCartSet.setQuantity(moveQuantity);
-                moveCartSet.setPlace(branch);
-                moveCartSet.setStatus(CartStatus.INSTALLED);
-                sourceCartSet.setQuantity(sourceQuantity-moveQuantity);
-
-                toFromCartSets.put(moveCartSet, sourceCartSet);
-                observableOutCartSets.addAll(moveCartSet);
-                log.info("Adding Out CartSet: "
-                        + moveCartSet.getTypeString()
-                        + " (" + moveCartSet.getStatusDesc() + ") - "
-                        + moveCartSet.getQuantity() + " complete");
-            }
+            observableOutCartSets.clear();
+            observableOutCartSets.addAll(toFromOutCartSets.keySet());
+            log.info("Adding Out CartSets complete ");
         }
+        log.info("Adding Out CartSets canceled ");
+
     }
 
     private void editOutCartSet() {
         log.info("Edit Out CartSet");
         CartSet selectedMoveCartSet = outCartSetsTableView.getSelectionModel().getSelectedItem();
         if (selectedMoveCartSet!=null) {
-            CartSet selectedSourceCartSet = toFromCartSets.get(selectedMoveCartSet);
-            Integer initialSourceQuantity = selectedSourceCartSet.getQuantity()+selectedMoveCartSet.getQuantity();
-            quantityController.showAndWait(stage,selectedMoveCartSet.getQuantity(),initialSourceQuantity);
+            CartSet selectedSourceCartSet = toFromOutCartSets.get(selectedMoveCartSet);
+            Integer sourceQuantity = selectedSourceCartSet.getQuantity();
+            quantityController.showAndWait(stage, selectedMoveCartSet.getQuantity(),sourceQuantity);
             if (quantityController.getResult()==Result.OK) {
                 selectedMoveCartSet.setQuantity(quantityController.getQuantity());
-                selectedSourceCartSet.setQuantity(initialSourceQuantity-quantityController.getQuantity());
                 updateContent();
                 log.info("Editing Out CartSet: "
                         + selectedMoveCartSet.getTypeString()
@@ -266,9 +234,7 @@ public class ExchangeController extends AbstractController {
         log.info("Remove Out CartSet");
         CartSet selectedMoveCartSet = outCartSetsTableView.getSelectionModel().getSelectedItem();
         if (selectedMoveCartSet!=null) {
-            CartSet selectedSourceCartSet = toFromCartSets.get(selectedMoveCartSet);
-            selectedSourceCartSet.setQuantity(selectedSourceCartSet.getQuantity()+selectedMoveCartSet.getQuantity());
-            toFromCartSets.remove(selectedMoveCartSet);
+            toFromOutCartSets.remove(selectedMoveCartSet);
             observableOutCartSets.removeAll(selectedMoveCartSet);
             log.info("Removing Out CartSet: "
                     + selectedMoveCartSet.getTypeString()
@@ -298,7 +264,7 @@ public class ExchangeController extends AbstractController {
                 .owner(stage)
                 .title("Подтверждение")
                 .message(message)
-                .actions(Dialog.ACTION_YES,Dialog.ACTION_CANCEL)
+                .actions(Dialog.ACTION_YES, Dialog.ACTION_CANCEL)
                 .showConfirm();
         if (response== Dialog.ACTION_YES) {
             saveCartSets();
@@ -309,14 +275,6 @@ public class ExchangeController extends AbstractController {
     protected void handleCancel() {
 
         log.info("Handle Cancel action");
-        Set<CartSet> moveCartSets = toFromCartSets.keySet();
-        for (CartSet moveCartSet:moveCartSets) {
-            CartSet sourceCartSet = toFromCartSets.get(moveCartSet);
-            Integer moveQuantity = moveCartSet.getQuantity();
-            Integer sourceQuantity = sourceCartSet.getQuantity();
-
-            sourceCartSet.setQuantity(sourceQuantity + moveQuantity);
-        }
         clearLists();
         hideStage();
 
@@ -337,6 +295,9 @@ public class ExchangeController extends AbstractController {
 
     private void saveCartSets() {
         log.info("Saving exchange...");
+
+
+
         /// Сохраняем все в отдельном потоке
         SavingTask savingTask = new SavingTask();
         BooleanBinding runningBinding = savingTask.stateProperty().isEqualTo(Task.State.RUNNING);
@@ -349,7 +310,8 @@ public class ExchangeController extends AbstractController {
 
 
     private void clearLists() {
-        toFromCartSets.clear();
+        toFromInCartSets.clear();
+        toFromOutCartSets.clear();
         observableInCartSets.clear();
         observableOutCartSets.clear();
     }
@@ -422,8 +384,9 @@ public class ExchangeController extends AbstractController {
         @Override
         protected Void call() throws Exception {
 
-            for (CartSet moveCartSet:observableInCartSets) {
+            for (Map.Entry<CartSet,CartSet> inCartSetEntry:toFromInCartSets.entrySet()) {
 
+                CartSet moveCartSet = inCartSetEntry.getKey();
                 log.info("Adding In move CartSet: "
                         + moveCartSet.getTypeString()
                         + " (" + moveCartSet.getStatusDesc() + ") - "
@@ -431,7 +394,10 @@ public class ExchangeController extends AbstractController {
                 cartSetService.addCartSet(moveCartSet);
                 log.info("Adding In move CartSet complete");
 
-                CartSet sourceCartSet = toFromCartSets.get(moveCartSet);
+                CartSet sourceCartSet = inCartSetEntry.getValue();
+
+                // обновляем количество
+                sourceCartSet.setQuantity(sourceCartSet.getQuantity()-moveCartSet.getQuantity());
 
                 log.info("Updating In source CartSet: "
                         + sourceCartSet.getTypeString()
@@ -445,8 +411,9 @@ public class ExchangeController extends AbstractController {
 
 
             // сохраняем отправленные наборы
-            for (CartSet moveCartSet:observableOutCartSets) {
+            for (Map.Entry<CartSet,CartSet> inCartSetEntry:toFromOutCartSets.entrySet()) {
 
+                CartSet moveCartSet = inCartSetEntry.getKey();
                 log.info("Adding Out move CartSet: "
                         + moveCartSet.getTypeString()
                         + " (" + moveCartSet.getStatusDesc() + ") - "
@@ -454,7 +421,10 @@ public class ExchangeController extends AbstractController {
                 cartSetService.addCartSet(moveCartSet);
                 log.info("Adding Out move CartSet complete");
 
-                CartSet sourceCartSet = toFromCartSets.get(moveCartSet);
+                CartSet sourceCartSet = inCartSetEntry.getValue();
+
+                // обновляем количество
+                sourceCartSet.setQuantity(sourceCartSet.getQuantity()-moveCartSet.getQuantity());
 
                 log.info("Updating Out source CartSet: "
                         + sourceCartSet.getTypeString()
