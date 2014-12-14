@@ -2,6 +2,7 @@ package org.kesler.cartreg.gui.placecartsetsselect;
 
 import javafx.beans.property.*;
 import org.kesler.cartreg.domain.CartSet;
+import org.kesler.cartreg.domain.CartStatus;
 
 public class CheckableCartSet {
     private CartSet sourceCartSet;
@@ -11,14 +12,14 @@ public class CheckableCartSet {
 
     public CheckableCartSet(CartSet sourceCartSet) {
         this.sourceCartSet = sourceCartSet;
-        checkedQuantityString.bind(this.checkedQuantity.asString().concat(" из " + getSourceQuantity()));
+        this.checkedQuantityString.bind(this.checkedQuantity.asString().concat(" из " + getSourceQuantity()));
     }
 
     public CheckableCartSet(CartSet sourceCartSet, Integer checkedQuantity, Boolean checked) {
         this.sourceCartSet = sourceCartSet;
         this.checkedQuantity.setValue(checkedQuantity);
         this.checked.setValue(checked);
-        checkedQuantityString.bind(this.checkedQuantity.asString().concat(" из " + getSourceQuantity()));
+        this.checkedQuantityString.bind(this.checkedQuantity.asString().concat(" из " + getSourceQuantity()));
     }
 
     // read-write properties
@@ -37,6 +38,7 @@ public class CheckableCartSet {
     public final CartSet getSourceCartSet() {return sourceCartSet;}
     public final Integer getSourceQuantity() {return sourceCartSet.getQuantity();}
     public final String getTypeString() {return sourceCartSet.getTypeString();}
+    public final CartStatus getStatus() {return sourceCartSet.getStatus();}
     public final String getStatusDesc() {return sourceCartSet.getStatusDesc();}
     public final String getPlaceString() {return sourceCartSet.getPlaceString();}
 

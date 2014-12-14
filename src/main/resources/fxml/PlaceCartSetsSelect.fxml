@@ -73,7 +73,7 @@
                   </ImageView>
                </graphic>
                 <tooltip>
-                    <Tooltip text="Наличие картриджей" />
+                    <Tooltip text="Редактировать наличие картриджей" />
                 </tooltip>
             </Button>
          </children>

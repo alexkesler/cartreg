@@ -1,5 +1,7 @@
 package org.kesler.cartreg.gui.placecartsetsselect;
 
+import javafx.beans.*;
+import javafx.beans.Observable;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.value.WeakChangeListener;
 import javafx.collections.FXCollections;
@@ -70,7 +72,7 @@ public class PlaceCartSetsSelectController extends AbstractController {
     }
 
     public void showAndWait(Window owner, Place place, CartStatus[] statuses) {
-        log.info("ShowAndWait for place " + place.getCommonName());
+        log.info("ShowAndWait for place " + place.getCommonName() + " and statuses " + Arrays.deepToString(statuses));
         this.place = place;
         selectedToSourceCartSets.clear();
         this.statuses = statuses;
@@ -87,7 +89,7 @@ public class PlaceCartSetsSelectController extends AbstractController {
     }
 
     public void showAndWait(Window owner, Place place, CartStatus[] statuses, Map<CartSet,CartSet> selectedToSourceCartSets) {
-        log.info("ShowAndWait for place " + place.getCommonName() + " and selectedCartSets");
+        log.info("ShowAndWait for place " + place.getCommonName() + " and statuses " + Arrays.deepToString(statuses) + " and selectedCartSets");
         this.place = place;
         this.statuses = statuses;
         this.selectedToSourceCartSets.clear();
@@ -113,7 +115,12 @@ public class PlaceCartSetsSelectController extends AbstractController {
 
 
     public Map<CartSet,CartSet> getSelectedToSourceCartSetsMap() {
+        computeSelectedToSourceCartSetsMap();
 
+        return selectedToSourceCartSets;
+    }
+
+    private void computeSelectedToSourceCartSetsMap() {
         selectedToSourceCartSets.clear();
 
         for(CheckableCartSet checkableCartSet:observableCheckableCartSets) {
@@ -125,9 +132,7 @@ public class PlaceCartSetsSelectController extends AbstractController {
             }
         }
 
-        return selectedToSourceCartSets;
     }
-
 
     @FXML
     protected void handlePlaceCartSetsButtonAction(ActionEvent ev) {
@@ -148,16 +153,32 @@ public class PlaceCartSetsSelectController extends AbstractController {
 
 
     private void showPlaceCartSetsDialog() {
+        /// сохраняем выбранные позиции
+        computeSelectedToSourceCartSetsMap();
+        // вызываем диалог
         placeCartSetsController.showAndWait(stage, place);
         updateContent();
     }
 
 
     private void editCheckableCartSet(CheckableCartSet checkableCartSet) {
+        /// Проверяем, входит ли выбранная позиция в список разрешенных
+        if (statuses!=null && !Arrays.asList(statuses).contains(checkableCartSet.getStatus())) {
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Внимание")
+                    .message("Никак нельзя выбрать. Можно выбирать только: " + Arrays.deepToString(statuses))
+                    .showWarning();
+            checkableCartSet.setChecked(false);
+            checkableCartSet.setCheckedQuantity(0);
+            return;
+        }
         quantityController.showAndWait(stage,checkableCartSet.getCheckedQuantity(),checkableCartSet.getSourceQuantity());
         if (quantityController.getResult()==Result.OK) {
             checkableCartSet.setCheckedQuantity(quantityController.getQuantity());
         }
+        if (checkableCartSet.getCheckedQuantity()==0)
+            checkableCartSet.setChecked(false);
     }
 
 
@@ -196,11 +217,14 @@ public class PlaceCartSetsSelectController extends AbstractController {
                 // добавляем в список
                 observableCheckableCartSets.add(finalCheckableCartSet);
                 // назначаем слушателей - для вызова окошка с количеством
-                finalCheckableCartSet.checkedProperty().addListener(new WeakChangeListener<>((observable, oldValue, newValue) -> {
-                    if (newValue) {
-                        editCheckableCartSet(finalCheckableCartSet);
-                    } else {
-                        finalCheckableCartSet.setCheckedQuantity(0);
+                finalCheckableCartSet.checkedProperty().addListener(new WeakInvalidationListener(new InvalidationListener() {
+                    @Override
+                    public void invalidated(Observable observable) {
+                        if (finalCheckableCartSet.getChecked()) {
+                            editCheckableCartSet(finalCheckableCartSet);
+                        } else {
+                            finalCheckableCartSet.setCheckedQuantity(0);
+                        }
                     }
                 }));
 

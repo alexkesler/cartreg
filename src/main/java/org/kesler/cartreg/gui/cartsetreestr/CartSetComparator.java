@@ -12,7 +12,7 @@ public class CartSetComparator implements Comparator<CartSet> {
         int placeCompare = new PlaceComparator().compare(o1.getPlace(),o2.getPlace());
         int statusCompare = (o1.getStatus()==o2.getStatus())?0:
                 (o1.getStatus()==CartStatus.NONE && o2.getStatus()!=CartStatus.NONE)?1:
-                        Integer.signum(o1.getStatus().ordinal()-o2.getStatus().ordinal());
+                        Integer.compare(o1.getStatus().ordinal(), o2.getStatus().ordinal());
         int typeStringCompare = o1.getTypeString().compareTo(o2.getTypeString());
 
 
