@@ -22,9 +22,11 @@ import org.kesler.cartreg.gui.placecartsets.PlaceCartSetsController;
 import org.kesler.cartreg.gui.withdraw.WithdrawController;
 import org.kesler.cartreg.service.CartSetService;
 import org.kesler.cartreg.service.PlaceService;
+import org.kesler.cartreg.util.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -82,10 +84,11 @@ public class MainController extends AbstractController{
     private AboutController aboutController;
 
 
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
 
+    @Override
+    protected void updateContent() {
+        taskMessageLabel.setText("Соединено: " + Options.getOption("server.ip") + "/" + Options.getOption("server.db"));
+    }
 
     // Меню Действия
     @FXML protected void handleConnectMenuItemAction(ActionEvent ev) {

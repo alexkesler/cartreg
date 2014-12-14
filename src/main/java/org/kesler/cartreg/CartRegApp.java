@@ -23,13 +23,14 @@ public class CartRegApp extends Application {
 
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(CartRegAppFactory.class);
         MainController mainController = context.getBean(MainController.class);
-        mainController.setStage(stage);
-        Scene scene = new Scene(mainController.getRoot(), 700, 500);
-        stage.setScene(scene);
-        stage.setTitle("Учет картриджей");
+//        mainController.setStage(stage);
+//        Scene scene = new Scene(mainController.getRoot(), 700, 500);
+//        stage.setScene(scene);
+//        stage.setTitle("Учет картриджей");
         Image icon = new Image(this.getClass().getResourceAsStream("/images/Printer.png"));
-
-        stage.getIcons().add(icon);
-        stage.show();
+//
+//        stage.getIcons().add(icon);
+//        stage.show();
+        mainController.showMain(stage,"Учет картриджей",icon);
     }
 }
