@@ -16,11 +16,13 @@ import javafx.stage.Window;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
-import org.kesler.cartreg.domain.*;
+import org.kesler.cartreg.domain.CartSet;
+import org.kesler.cartreg.domain.CartSetChange;
+import org.kesler.cartreg.domain.CartStatus;
+import org.kesler.cartreg.domain.Place;
 import org.kesler.cartreg.gui.AbstractController;
 import org.kesler.cartreg.gui.cartsetreestr.CartSetComparator;
 import org.kesler.cartreg.gui.place.PlaceListController;
-import org.kesler.cartreg.gui.placecartsets.PlaceCartSetsController;
 import org.kesler.cartreg.gui.placecartsetsselect.PlaceCartSetsSelectController;
 import org.kesler.cartreg.gui.util.QuantityController;
 import org.kesler.cartreg.service.CartSetChangeService;
@@ -32,7 +34,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Контроллер для перемещений
