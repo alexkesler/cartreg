@@ -39,7 +39,7 @@
         <columns>
           <TableColumn editable="false" prefWidth="266.0" text="Модель" >
               <cellValueFactory>
-                  <PropertyValueFactory property="model" />
+                  <PropertyValueFactory property="typeString" />
               </cellValueFactory>
           </TableColumn>
           <TableColumn maxWidth="72.0" minWidth="72.0" prefWidth="72.0" text="Кол-во">

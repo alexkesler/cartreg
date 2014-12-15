@@ -28,7 +28,7 @@ public class CartSetDAOImpl implements CartSetDAO {
     @Override
     public void addCartSet(CartSet cartSet) {
         log.debug("Adding CartSet: "
-                + cartSet.getModel()
+                + cartSet.getTypeString()
                 + " (" + cartSet.getStatusDesc() + ") - "
                 + cartSet.getQuantity());
         sessionFactory.getCurrentSession().beginTransaction();
@@ -41,7 +41,7 @@ public class CartSetDAOImpl implements CartSetDAO {
     @Override
     public void updateCartSet(CartSet cartSet) {
         log.debug("Updating CartSet "
-                + cartSet.getModel()
+                + cartSet.getTypeString()
                 + " (" + cartSet.getStatusDesc() + ") - "
                 + cartSet.getQuantity());
 
@@ -54,7 +54,7 @@ public class CartSetDAOImpl implements CartSetDAO {
     @Override
     public void removeCartSet(CartSet cartSet) {
         log.debug("Removing CartSet "
-                + cartSet.getModel()
+                + cartSet.getTypeString()
                 + " (" + cartSet.getStatusDesc() + ") - "
                 + cartSet.getQuantity());
 

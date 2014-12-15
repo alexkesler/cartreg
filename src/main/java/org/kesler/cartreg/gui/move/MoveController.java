@@ -3,6 +3,7 @@ package org.kesler.cartreg.gui.move;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Window;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
@@ -18,8 +20,9 @@ import org.kesler.cartreg.domain.CartSet;
 import org.kesler.cartreg.domain.CartSetChange;
 import org.kesler.cartreg.domain.Place;
 import org.kesler.cartreg.gui.AbstractController;
+import org.kesler.cartreg.gui.cartsetreestr.CartSetComparator;
 import org.kesler.cartreg.gui.place.PlaceListController;
-import org.kesler.cartreg.gui.placecartsets.PlaceCartSetsController;
+import org.kesler.cartreg.gui.placecartsetsselect.PlaceCartSetsSelectController;
 import org.kesler.cartreg.gui.util.QuantityController;
 import org.kesler.cartreg.service.CartSetChangeService;
 import org.kesler.cartreg.service.CartSetService;
@@ -52,12 +55,13 @@ public class MoveController extends AbstractController {
     @Autowired
     protected CartSetChangeService cartSetChangeService;
 
-
     @Autowired
     protected PlaceListController placeListController;
 
+
+
     @Autowired
-    protected PlaceCartSetsController placeCartSetsController;
+    protected PlaceCartSetsSelectController placeCartSetsSelectController;
 
     @Autowired
     protected QuantityController quantityController;
@@ -71,12 +75,15 @@ public class MoveController extends AbstractController {
 
     @FXML
     protected void initialize() {
-        cartSetsTableView.setItems(observableCartSets);
+        SortedList<CartSet> sortedCartSets = new SortedList<CartSet>(observableCartSets,new CartSetComparator());
+        cartSetsTableView.setItems(sortedCartSets);
     }
 
     @Override
     public void show(Window owner) {
         clearLists();
+        sourcePlace = null;
+        destinationPlace = null;
         Image icon = new Image(this.getClass().getResourceAsStream("/images/transform.png"));
 
         super.show(owner, "Перемещение", icon);
@@ -103,6 +110,14 @@ public class MoveController extends AbstractController {
     }
 
     @FXML
+    protected void handleCartSetsTableViewMouseClick(MouseEvent ev) {
+        if (ev.getClickCount()==2) {
+            editCartSet();
+        }
+    }
+
+
+    @FXML
     protected void handleRemoveCartSetButtonAction(ActionEvent ev) {
         removeCartSet();
     }
@@ -126,7 +141,7 @@ public class MoveController extends AbstractController {
 
         String message = "Переместить картриджи?";
         for (CartSet cartSet: observableCartSets) {
-            message += "\n" + cartSet.getModel() +" (" + cartSet.getStatusDesc() + ") - " + cartSet.getQuantity()
+            message += "\n" + cartSet.getTypeString() +" (" + cartSet.getStatusDesc() + ") - " + cartSet.getQuantity()
                     + " шт " + sourcePlace.getName() + " - > " + destinationPlace.getName();
         }
 
@@ -154,6 +169,7 @@ public class MoveController extends AbstractController {
         if (placeListController.getResult()==Result.OK) {
             sourcePlace = placeListController.getSelectedItem();
             log.info("Source place set:" + sourcePlace.getCommonName());
+            clearLists();
             updateContent();
         }
     }
@@ -171,32 +187,15 @@ public class MoveController extends AbstractController {
     private void addCartSet() {
         log.info("Handle add CartSet");
         if (!checkSource()) return;
-        placeCartSetsController.showAndWaitSelect(stage, sourcePlace);
-        if (placeCartSetsController.getResult()==Result.OK) {
-            CartSet sourceCartSet = placeCartSetsController.getSelectedItem();
-            // если пытаемся добавить существующий - то редактируем
-            for (Map.Entry<CartSet,CartSet> toFromEntry:toFromCartSets.entrySet()) {
-                if (toFromEntry.getValue().equals(sourceCartSet)) {
-                    cartSetsTableView.getSelectionModel().select(observableCartSets.indexOf(toFromEntry.getKey()));
-                    editCartSet();
-                    return;
-                }
-            }
 
-            CartSet moveCartSet = sourceCartSet.copyCartSet();
-
-            quantityController.showAndWait(stage,sourceCartSet.getQuantity(),sourceCartSet.getQuantity());
-            if (quantityController.getResult()==Result.OK) {
-                Integer sourceQuantity = sourceCartSet.getQuantity();
-                Integer moveQuantity = quantityController.getQuantity();
-                moveCartSet.setQuantity(moveQuantity);
-                sourceCartSet.setQuantity(sourceQuantity-moveQuantity);
-
-                observableCartSets.addAll(moveCartSet);
-
-                toFromCartSets.put(moveCartSet,sourceCartSet);
-            }
+        placeCartSetsSelectController.showAndWait(stage,sourcePlace, toFromCartSets);
+        if (placeCartSetsSelectController.getResult()==Result.OK) {
+            toFromCartSets.clear();
+            toFromCartSets.putAll(placeCartSetsSelectController.getSelectedToSourceCartSetsMap());
+            observableCartSets.clear();
+            observableCartSets.addAll(toFromCartSets.keySet());
         }
+
     }
 
     private void editCartSet() {
@@ -204,13 +203,12 @@ public class MoveController extends AbstractController {
         CartSet selectedMoveCartSet = cartSetsTableView.getSelectionModel().getSelectedItem();
         if (selectedMoveCartSet!=null) {
             CartSet sourceCartSet = toFromCartSets.get(selectedMoveCartSet);
-            Integer sourceQuantity = sourceCartSet.getQuantity() + selectedMoveCartSet.getQuantity();
+            Integer sourceQuantity = sourceCartSet.getQuantity();
             Integer moveQuantity = selectedMoveCartSet.getQuantity();
             quantityController.showAndWait(stage, moveQuantity,sourceQuantity);
             if (quantityController.getResult()==Result.OK) {
                 moveQuantity = quantityController.getQuantity();
                 selectedMoveCartSet.setQuantity(moveQuantity);
-                sourceCartSet.setQuantity(sourceQuantity-moveQuantity);
 
                 FXUtils.updateObservableList(observableCartSets);
             }
@@ -221,9 +219,6 @@ public class MoveController extends AbstractController {
         log.info("Handle remove CartSet");
         CartSet selectedMoveCartSet = cartSetsTableView.getSelectionModel().getSelectedItem();
         if (selectedMoveCartSet!=null) {
-            CartSet sourceCartSet = toFromCartSets.get(selectedMoveCartSet);
-            Integer sourceQuantity = sourceCartSet.getQuantity() + selectedMoveCartSet.getQuantity();
-            sourceCartSet.setQuantity(sourceQuantity);
 
             toFromCartSets.remove(selectedMoveCartSet);
             observableCartSets.removeAll(selectedMoveCartSet);
@@ -231,6 +226,14 @@ public class MoveController extends AbstractController {
     }
 
     private void saveCartSets() {
+        // изменяем количество в источнике
+        for (Map.Entry<CartSet,CartSet> toFromEntry:toFromCartSets.entrySet()) {
+            CartSet moveCartSet = toFromEntry.getKey();
+            CartSet sourceCartSet = toFromEntry.getValue();
+            Integer moveQuantity = moveCartSet.getQuantity();
+            Integer sourceQuantity = sourceCartSet.getQuantity();
+            sourceCartSet.setQuantity(sourceQuantity-moveQuantity);
+        }
 
         log.info("Saving move data...");
         SavingTask savingTask = new SavingTask();
@@ -246,8 +249,6 @@ public class MoveController extends AbstractController {
     private void clearLists() {
         observableCartSets.clear();
         toFromCartSets.clear();
-        sourcePlace = null;
-        destinationPlace = null;
     }
 
     private boolean checkSource() {

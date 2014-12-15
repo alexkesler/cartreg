@@ -26,7 +26,7 @@
 
             <TableColumn maxWidth="200.0" minWidth="100.0" prefWidth="200.0" sortable="false" text="Модель">
                 <cellValueFactory>
-                    <PropertyValueFactory property="model" />
+                    <PropertyValueFactory property="typeString" />
                 </cellValueFactory>
             </TableColumn>
             <TableColumn maxWidth="200.0" minWidth="70.0" prefWidth="150.0" sortable="false" text="Состояние">

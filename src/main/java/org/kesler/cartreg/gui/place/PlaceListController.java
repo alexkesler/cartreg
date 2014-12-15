@@ -352,7 +352,6 @@ public class PlaceListController extends AbstractListController<Place> {
         protected void succeeded() {
             super.succeeded();
             observablePlaces.add(newPlace);
-            observablePlaces.sort(new PlaceComparator());
             placeListView.getSelectionModel().select(newPlace);
             log.info("Adding place complete");
         }

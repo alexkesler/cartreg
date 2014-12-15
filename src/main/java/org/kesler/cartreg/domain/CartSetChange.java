@@ -61,6 +61,28 @@ public class CartSetChange extends AbstractEntity{
     public void setToPlace(Place toPlace) { this.toPlace = toPlace; }
     public String getToPlaceString() {return toPlace==null?"Не опр":toPlace.getCommonName();}
 
+    public Place getActualPlace() {
+        switch (type) {
+            case ARRIVAL:
+                return toPlace;
+            case MOVE:
+                return toPlace;
+            case RECIEVE:
+                return fromPlace;
+            case SEND:
+                return toPlace;
+            case FILL:
+                return toPlace;
+            case DEFECT:
+                return toPlace;
+            case WITHDRAW:
+                return toPlace;
+            default:
+                return toPlace;
+        }
+    }
+    public String getActualPlaceString() { return getActualPlace()==null?"Не опр":getActualPlace().getCommonName();}
+
     public CartStatus getFromStatus() { return fromStatus; }
     public void setFromStatus(CartStatus fromStatus) { this.fromStatus = fromStatus; }
     public String getFromStatusString() { return fromStatus==null?"Не опр": fromStatus.getDesc();}
@@ -68,6 +90,28 @@ public class CartSetChange extends AbstractEntity{
     public CartStatus getToStatus() { return toStatus; }
     public void setToStatus(CartStatus toStatus) { this.toStatus = toStatus; }
     public String getToStatusString() { return toStatus==null?"Не опр": toStatus.getDesc();}
+
+    public CartStatus getActualStatus() {
+        switch (type) {
+            case ARRIVAL:
+                return toStatus;
+            case MOVE:
+                return toStatus;
+            case RECIEVE:
+                return toStatus;
+            case SEND:
+                return fromStatus;
+            case FILL:
+                return toStatus;
+            case DEFECT:
+                return toStatus;
+            case WITHDRAW:
+                return toStatus;
+            default:
+                return toStatus;
+        }
+    }
+    public String getActualStatusString() { return getActualStatus()==null?"Не опр": getActualStatus().getDesc();}
 
     public Integer getQuantity() { return quantity; }
     public void setQuantity(Integer quantity) { this.quantity = quantity; }

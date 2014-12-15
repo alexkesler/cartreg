@@ -62,6 +62,18 @@ public abstract class AbstractController {
         updateContent();
     }
 
+    public void showMain(Stage stage, String title, Image icon) {
+        log.info("Show Main with title " + title + " and icon");
+        this.stage = stage;
+        if (scene==null) scene = new Scene(root, 700, 500);
+        stage.setScene(scene);
+        stage.setTitle(title);
+        stage.getIcons().clear();
+        stage.getIcons().addAll(icon);
+        stage.show();
+        updateContent();
+    }
+
 
     public void showFullScreen(Window owner) {
         log.info("Show view maximized");
