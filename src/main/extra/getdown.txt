@@ -47,8 +47,7 @@ code = lib/spring-orm-4.1.2.RELEASE.jar
 code = lib/spring-tx-4.1.2.RELEASE.jar
 code = lib/xml-apis-1.0.b2.jar
 
-resource = CartReg.exe
-resource = config/CartReg.properties
+#resource = config/CartReg.properties
 
 
 # The main entry point for the application

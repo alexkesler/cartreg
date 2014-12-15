@@ -212,7 +212,7 @@
                 <configuration>
                     <serverId>AppHost</serverId>
                     <fromDir>${project.build.directory}</fromDir>
-                    <includes>lib/*,${project.build.finalName}.exe,${project.build.finalName}.jar,getdown.txt,digest.txt
+                    <includes>lib/*,${project.build.finalName}.jar,getdown.txt,digest.txt
                     </includes>
                     <url>scp://10.10.0.118</url>
                     <toDir>/srv/www/default/public_html/cartreg</toDir>
