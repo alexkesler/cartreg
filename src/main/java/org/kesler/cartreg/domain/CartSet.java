@@ -37,7 +37,7 @@ public class CartSet extends AbstractEntity{
     public CartType getType() { return type; }
     public void setType(CartType type) { this.type = type; }
 
-    public String getModel() {
+    public String getTypeString() {
         return type==null?"Не определена":type.getModel();
     }
 

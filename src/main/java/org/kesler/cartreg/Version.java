@@ -5,8 +5,8 @@ package org.kesler.cartreg;
  */
 public abstract class Version {
 
-    private static String version = "1.0.0.0";
-    private static String releaseDate = "12.12.2014";
+    private static String version = "1.1.0.0";
+    private static String releaseDate = "15.12.2014";
 
     public static String getVersion() {
         return version;
